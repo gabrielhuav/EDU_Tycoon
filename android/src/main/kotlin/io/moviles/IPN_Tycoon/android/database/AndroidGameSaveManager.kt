@@ -103,9 +103,7 @@ class AndroidGameSaveManager(
     }
 
     private fun calcularAlumnos(): Int =
-        PropiedadRepository.propiedades.values
-            .filter { it.comprada }
-            .sumOf { it.baseAlumnos * it.nivel }
+        io.moviles.IPN_Tycoon.rival.MercadoAlumnos.alumnosJugador()
 
     private fun EscuelaEntity.toDto() = GameSaveData(
         slot           = slot,

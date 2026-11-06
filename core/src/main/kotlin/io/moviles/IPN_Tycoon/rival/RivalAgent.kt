@@ -28,6 +28,8 @@ class RivalAgent(private val random: Random = Random.Default) {
     /** Ejecuta un turno (un update de la FSM) y devuelve las acciones de este ciclo. */
     fun tomarTurno(ciclo: Int = Int.MAX_VALUE): List<RivalAccion> {
         acciones.clear()
+        // La partida pudo cargarse despues de crear el agente: sincroniza con RivalState.
+        if (stateMachine.currentState != RivalState.estado) stateMachine.setInitialState(RivalState.estado)
         if (ciclo <= CICLOS_GRACIA) return emptyList()
         stateMachine.update()
         RivalState.estado = stateMachine.currentState
