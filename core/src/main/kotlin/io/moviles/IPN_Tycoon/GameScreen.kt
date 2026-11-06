@@ -36,6 +36,7 @@ import io.moviles.IPN_Tycoon.engine.EventEngine
 import io.moviles.IPN_Tycoon.engine.EventoEfecto
 import io.moviles.IPN_Tycoon.engine.GameCycleEngine
 import io.moviles.IPN_Tycoon.engine.GameEvent
+import io.moviles.IPN_Tycoon.engine.Resultado
 import io.moviles.IPN_Tycoon.engine.RivalEngine
 import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 import io.moviles.IPN_Tycoon.rival.RivalAccion
@@ -57,7 +58,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
         RivalAgent(),
         onAccion    = { accion -> onRivalAccion(accion) },
         // El contador del motor no se reinicia entre partidas; ciclosJugados si.
-        cicloActual = { GameState.ciclosJugados }
+        cicloActual = { GameState.ciclosJugados },
+        onFinPartida = { resultado -> mostrarFinPartida(resultado) }
     )
     private var cycleTimer        = 0f
     private val cycleDuration     = 30f
@@ -935,6 +937,15 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 Gdx.app.log("RIVAL", "Estado ${accion.de} -> ${accion.a}")
         }
         hudDirty = true
+    }
+
+    private fun mostrarFinPartida(resultado: Resultado) {
+        val tu = Math.round(MercadoAlumnos.cuotaJugador() * 100).toInt()
+        Gdx.app.log("RIVAL", "Fin de partida: $resultado (Tú $tu% | Rival ${100 - tu}%)")
+        FinPartidaWindow(resultado, tu) {
+            modoCarga = false
+            game.setScreen<SeleccionPartida>()
+        }.show(stage)
     }
 
     private fun showRivalToast(texto: String) {
