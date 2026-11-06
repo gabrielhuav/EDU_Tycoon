@@ -15,6 +15,7 @@ enum class Resultado { VICTORIA, DERROTA }
 class RivalEngine(
     private val agent: RivalAgent = RivalAgent(),
     private val onAccion: (RivalAccion) -> Unit = {},
+    private val cicloActual: (Int) -> Int = { it },
     @Suppress("unused") private val onFinPartida: (Resultado) -> Unit = {}
 ) : GameCycleListener {
 
@@ -22,6 +23,6 @@ class RivalEngine(
 
     override fun onResolveCycle(cycle: Int) {
         RivalState.dinero += MercadoAlumnos.ingresoRival()
-        agent.tomarTurno(cycle).forEach(onAccion)
+        agent.tomarTurno(cicloActual(cycle)).forEach(onAccion)
     }
 }

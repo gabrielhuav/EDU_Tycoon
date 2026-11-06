@@ -53,7 +53,12 @@ class GameScreen(game: Main) : BaseScreen(game) {
     private val economyEngine     = EconomyEngine()
     private val estudiantesEngine = EstudiantesEngine()
     private val eventEngine       = EventEngine { evento -> showEventToast(evento) }
-    private val rivalEngine       = RivalEngine(RivalAgent(), onAccion = { accion -> onRivalAccion(accion) })
+    private val rivalEngine       = RivalEngine(
+        RivalAgent(),
+        onAccion    = { accion -> onRivalAccion(accion) },
+        // El contador del motor no se reinicia entre partidas; ciclosJugados si.
+        cicloActual = { GameState.ciclosJugados }
+    )
     private var cycleTimer        = 0f
     private val cycleDuration     = 30f
 
