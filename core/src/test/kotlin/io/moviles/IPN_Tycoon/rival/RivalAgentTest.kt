@@ -46,6 +46,22 @@ class RivalAgentTest {
     }
 
     @Test
+    fun `never buys the protected starting school even with lots of money`() {
+        RivalState.dinero = 1_000_000_000L
+        simular(3, 60)
+        assertFalse(RivalState.posee("escom_hitbox"))
+        assertTrue("escom_hitbox" in RivalAgent.EDIFICIOS_PROTEGIDOS)
+    }
+
+    @Test
+    fun `grace period blocks actions`() {
+        val agent = RivalAgent(Random(1))
+        for (c in 1..RivalAgent.CICLOS_GRACIA) assertTrue(agent.tomarTurno(c).isEmpty())
+        assertTrue(RivalState.edificios.isEmpty())
+        assertTrue(agent.tomarTurno(RivalAgent.CICLOS_GRACIA + 1).any { it is RivalAccion.Compra })
+    }
+
+    @Test
     fun `respects mejoraMax`() {
         RivalState.dinero = 500_000_000L
         simular(3, 60)

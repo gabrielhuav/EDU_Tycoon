@@ -30,9 +30,19 @@ class RivalEngineTest {
         val acciones = mutableListOf<RivalAccion>()
         val engine = GameCycleEngine()
         engine.addListener(RivalEngine(RivalAgent(Random(1)), { acciones.add(it) }))
-        engine.advanceCycle()
+        repeat(RivalAgent.CICLOS_GRACIA + 1) { engine.advanceCycle() }
         assertTrue(acciones.any { it is RivalAccion.Compra })
         assertTrue(RivalState.edificios.isNotEmpty())
+    }
+
+    @Test
+    fun `rival takes no actions during grace period`() {
+        val acciones = mutableListOf<RivalAccion>()
+        val engine = GameCycleEngine()
+        engine.addListener(RivalEngine(RivalAgent(Random(1)), { acciones.add(it) }))
+        repeat(RivalAgent.CICLOS_GRACIA) { engine.advanceCycle() }
+        assertTrue(acciones.isEmpty())
+        assertTrue(RivalState.edificios.isEmpty())
     }
 
     @Test

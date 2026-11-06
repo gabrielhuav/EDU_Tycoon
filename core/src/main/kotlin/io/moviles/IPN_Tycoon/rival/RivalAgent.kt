@@ -15,6 +15,10 @@ class RivalAgent(private val random: Random = Random.Default) {
         const val RESERVA_MINIMA = 150_000L
         const val UMBRAL_COMPETIR = 0.60
         const val NIVEL_INICIAL = 1
+        /** Ciclos iniciales en los que el rival no compra ni mejora. */
+        const val CICLOS_GRACIA = 3
+        /** Edificios que el rival nunca compra (la escuela inicial del jugador). */
+        val EDIFICIOS_PROTEGIDOS: Set<String> = setOf("escom_hitbox")
     }
 
     val stateMachine = DefaultStateMachine<RivalAgent, RivalEstado>(this, RivalState.estado)
@@ -22,8 +26,9 @@ class RivalAgent(private val random: Random = Random.Default) {
     private val acciones = mutableListOf<RivalAccion>()
 
     /** Ejecuta un turno (un update de la FSM) y devuelve las acciones de este ciclo. */
-    fun tomarTurno(): List<RivalAccion> {
+    fun tomarTurno(ciclo: Int = Int.MAX_VALUE): List<RivalAccion> {
         acciones.clear()
+        if (ciclo <= CICLOS_GRACIA) return emptyList()
         stateMachine.update()
         RivalState.estado = stateMachine.currentState
         return acciones.toList()
@@ -36,7 +41,7 @@ class RivalAgent(private val random: Random = Random.Default) {
     // ── Consultas ─────────────────────────────────────────────────────
 
     fun edificiosLibres(): List<Propiedad> = PropiedadRepository.propiedades.values
-        .filter { !it.comprada && !RivalState.posee(it.id) }
+        .filter { !it.comprada && !RivalState.posee(it.id) && it.id !in EDIFICIOS_PROTEGIDOS }
 
     private fun libresAsequibles() = edificiosLibres().filter { it.precio <= RivalState.dinero }
 

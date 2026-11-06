@@ -22,6 +22,6 @@ class RivalEngine(
 
     override fun onResolveCycle(cycle: Int) {
         RivalState.dinero += MercadoAlumnos.ingresoRival()
-        agent.tomarTurno().forEach(onAccion)
+        agent.tomarTurno(cycle).forEach(onAccion)
     }
 }
