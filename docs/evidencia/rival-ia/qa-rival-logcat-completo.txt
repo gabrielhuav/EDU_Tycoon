@@ -1,0 +1,14 @@
+--------- beginning of main
+11-06 21:34:19.140 I/RIVAL   (32128): Compra Edificio2 por 400000 (dinero=100000)
+11-06 21:34:49.293 I/RIVAL   (32128): Estado EXPANDIR -> AHORRAR
+11-06 21:35:19.240 I/RIVAL   (32128): Estado AHORRAR -> EXPANDIR
+11-06 21:35:19.241 I/RIVAL   (32128): Compra Mac_and_cheese por 120000 (dinero=35358)
+11-06 21:35:49.121 I/RIVAL   (32128): Estado EXPANDIR -> AHORRAR
+11-06 21:37:19.623 I/RIVAL   (32128): Estado AHORRAR -> COMPETIR
+11-06 21:37:19.623 I/RIVAL   (32128): Mejora Mac_and_cheese a nivel 2 por 120000 (dinero=43608)
+11-06 21:37:49.116 I/RIVAL   (32128): Estado COMPETIR -> AHORRAR
+11-06 21:51:13.871 I/RIVAL   (10078): Compra Mac_and_cheese por 120000 (dinero=380000)
+11-06 21:51:43.890 I/RIVAL   (10078): Estado EXPANDIR -> COMPETIR
+11-06 21:51:43.890 I/RIVAL   (10078): Mejora Mac_and_cheese a nivel 2 por 120000 (dinero=263776)
+11-06 21:52:13.902 I/RIVAL   (10078): Estado COMPETIR -> AHORRAR
+11-06 21:55:13.875 I/RIVAL   (10078): Fin de partida: VICTORIA (Tú 98% | Rival 2%)
