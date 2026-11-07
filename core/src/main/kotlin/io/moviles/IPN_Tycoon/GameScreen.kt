@@ -415,6 +415,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         lastMoney      = -1
         lastStudents   = -1
         lastReputation = -1
+        lastCuota      = -1
         cycleTimer     = 0f
         hudDirty       = true
 
