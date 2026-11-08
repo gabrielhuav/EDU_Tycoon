@@ -93,7 +93,7 @@ Reglas de `ReglaFinPartida` (solo desde el ciclo 10, `CICLO_MINIMO`):
 
 ## Pruebas automatizadas
 
-`./gradlew :core:test` ejecuta **42 pruebas, 0 fallos, 0 omitidas**, en 8 clases:
+`./gradlew :core:test` ejecuta **54 pruebas, 0 fallos, 0 omitidas**, en 9 clases:
 
 | Clase | Pruebas |
 |---|---|
@@ -104,6 +104,7 @@ Reglas de `ReglaFinPartida` (solo desde el ciclo 10, `CICLO_MINIMO`):
 | `rival.RivalSerializacionTest` | 5 |
 | `engine.RivalEngineTest` | 4 |
 | `engine.GameCycleEngineTest` | 3 |
+| `engine.PipelineCompletoTest` | 2 |
 | `GameStateTest` | 3 |
 
 ## QA manual en dispositivo
@@ -124,12 +125,25 @@ Nota sobre CP-R5: para acelerarlo se usó una compilación local temporal que in
 
 Al volver a entrar a `GameScreen` (por ejemplo, tras cargar una partida) la etiqueta de cuota quedaba vacía hasta que cambiaba el valor, porque `lastCuota` conservaba el valor anterior. Se corrigió en el commit `a518a2b`, que reinicia `lastCuota = -1` al configurar los controles. Captura previa a la corrección: [bug-hud-cuota-vacia-antes-del-fix.png](evidencia/rival-ia/bug-hud-cuota-vacia-antes-del-fix.png).
 
+### Balance simulado
+
+Con un agente determinista (`Random(42)`) y 30 ciclos se compararon dos estrategias de jugador:
+
+| Jugador | Cuota final | Rival al ciclo 30 | Duración |
+|---|---|---|---|
+| Compra un edificio cada ciclo (óptimo) | 87 % | `Edificio2` nivel 1 (poder 250) | victoria ≈ ciclo 10 |
+| Compra cada 4 ciclos (casual) | 77 % | `cafeteria` nivel 2 + `Edificio2` nivel 1 (poder 450) | victoria ≈ ciclo 25 |
+
+El rival compra, cambia a COMPETIR y mejora cuando la cuota del jugador supera
+0.60. **No se cambiaron las constantes**: el rango de 10–25 ciclos se considera
+razonable y el ajuste fino requiere playtesting humano con testers.
+
 ## Limitaciones conocidas
 
-- El título del diálogo de victoria se ve como "Victoria!" sin el signo "¡": la fuente bitmap no incluye ese glifo (el código escribe "¡Victoria!").
-- El balance del rival (dinero inicial, umbrales, ruido) necesita más playtesting.
-- `StatsWindow` (menú de pausa) **no** aplica el factor de atracción ni el rival: calcula alumnos como `Σ baseAlumnos*nivel` e ingresos como `alumnos * 100`. Por eso puede diferir del HUD y de lo que realmente se acredita por ciclo.
-- `DatabaseTest` instrumentado (`android/src/androidTest/.../DatabaseTest.kt`) ya estaba desactualizado antes de esta función y no se actualizó.
+- El título del diálogo de victoria se ve como "Victoria!" sin el signo "¡": la fuente bitmap no incluye ese glifo. **En corrección** en la rama del issue #11.
+- El balance del rival se validó por simulación (ver arriba); falta playtesting humano con los testers de la prueba cerrada.
+- `StatsWindow` (menú de pausa) **no** aplica el factor de atracción ni el rival: calcula alumnos como `Σ baseAlumnos*nivel` e ingresos como `alumnos * 100`. Está asignado a la contribución de Javier.
+- `DatabaseTest` instrumentado (`android/src/androidTest/.../DatabaseTest.kt`) ya estaba desactualizado antes de esta función. Está asignado a la contribución de Javier.
 
 ## Cómo probar
 
