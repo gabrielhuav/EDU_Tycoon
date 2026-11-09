@@ -140,7 +140,7 @@ global — se verificó, no existen. Todo lo que afecta el build está en el rep
 Todo lo importante del proyecto que **no** vive en el repositorio está aquí:
 
 ```
-C:\Users\gabri\Downloads\EduTycoon PlayStore\
+C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\
 ```
 
 Contiene la llave de subida (`Edu_Tycoon`, sin extensión) y material sensible

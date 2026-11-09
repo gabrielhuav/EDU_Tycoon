@@ -16,7 +16,7 @@
 
 | | |
 |---|---|
-| Archivo | `C:\Users\gabri\Downloads\EduTycoon PlayStore\Edu_Tycoon` (sin extensión) |
+| Archivo | `C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\Edu_Tycoon` (sin extensión) |
 | Formato | PKCS12 |
 | Alias | `KEY0` |
 | Propietario | `C=55749, ST=Mexico, L=Tecamac, CN=Kevin Zarco Sosa` |
@@ -33,7 +33,7 @@ Para confirmar que un almacén candidato es el correcto, compara su huella con l
 de arriba (esto pide la contraseña, córrelo tú, no la IA):
 
 ```bash
-keytool -list -v -keystore "C:\Users\gabri\Downloads\EduTycoon PlayStore\Edu_Tycoon" -alias KEY0
+keytool -list -v -keystore "C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\Edu_Tycoon" -alias KEY0
 ```
 
 Para verificar un AAB **ya firmado** no hace falta contraseña: el certificado

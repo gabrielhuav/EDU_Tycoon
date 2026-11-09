@@ -17,7 +17,7 @@ El código está en este repositorio. **Lo que no está en el repositorio, y sin
 cual no se puede publicar, vive aquí:**
 
 ```
-C:\Users\gabri\Downloads\EduTycoon PlayStore\
+C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\
 ```
 
 Ahí está la llave de subida. Sin ella la app no se puede actualizar nunca más.
