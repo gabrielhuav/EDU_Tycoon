@@ -86,6 +86,27 @@ porque los estudiantes dependen de las escuelas ya pagadas. Si añades un sistem
 nuevo, implementa `GameCycleListener`, declara su `resolutionOrder` y el motor lo
 inserta en el lugar correcto. **No llames a tu sistema a mano desde `GameScreen`.**
 
+### Dibujo de edificios y animaciones (desde la 1.4)
+
+El paquete `rendering/` llegó con el PR #4 (FiniteMusic):
+
+| Clase | Qué hace |
+|---|---|
+| `BuildingRenderer` | Dibuja la textura del edificio y, encima, sus elementos animados |
+| `BuildingAnimationRegistry` | Asocia animaciones a un `id` de edificio. Hoy solo `escom_hitbox` |
+| `BuildingAnimation` | Envoltura de `Animation<TextureRegion>` de libGDX |
+| `AnimatedElement` | Posición, tamaño y recorrido de ida y vuelta de un elemento animado |
+
+`getElements(id, nivel)` devuelve tantos elementos como nivel tenga el edificio:
+ESCOM nivel 2 muestra dos estudiantes caminando. Para animar otro edificio,
+añade su entrada al mapa del registro. Las texturas se cargan la primera vez que
+se dibuja cualquier edificio comprado y se liberan en `dispose()`.
+
+**Rutas de archivos: nunca con `String.format` sin `Locale`.** En árabe, persa y
+otros idiomas, `"%02d".format(1)` da dígitos no latinos, la ruta no existe y la
+app se cierra. Usa `padStart(2, '0')`. Pasó en el PR #4 y se corrigió antes de
+publicar.
+
 ### El estado
 
 `GameState` es un `object` de Kotlin, o sea un singleton global: dinero, alumnos,
@@ -144,9 +165,11 @@ clases generadas por reflexión que R8 podría recortar. Antes de publicar, prue
    ```
 2. Probarlo en un teléfono real. La app usa OpenGL y Room; el emulador no
    siempre revela los mismos problemas.
-3. Que no se rompa una partida guardada existente. Si tocaste las entidades de
-   Room, hace falta una migración: **si no la escribes, la app de los usuarios
-   que actualicen se cierra al arrancar o pierde su partida.**
+3. Que no se rompa una partida guardada existente. `DatabaseProvider` usa
+   `fallbackToDestructiveMigration()`: si cambias las entidades de Room y subes
+   la versión del esquema sin escribir una migración, **Room borra las tablas y
+   todos los jugadores que actualicen pierden sus partidas sin ningún aviso.**
+   Escribe la migración antes de publicar.
 
 ## 6. Lo que no se toca sin entender por qué está ahí
 

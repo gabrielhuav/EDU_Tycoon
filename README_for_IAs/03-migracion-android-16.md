@@ -158,3 +158,18 @@ conviene probar en un teléfono son los que un build verde no detecta:
 3. Que carguen las partidas guardadas — el release lleva minificación con
    `proguard-android-optimize.txt` y Room usa clases generadas que R8 podría
    recortar. La variante `debug` **no** valida esto porque no minifica.
+
+## Próximo requisito de nivel de API
+
+Según el blog oficial de Android Developers (febrero de 2026), Google Play exigirá
+**targetSdk 37 (Android 17) a partir de agosto de 2027** para apps nuevas y
+actualizaciones. Al 9 de noviembre de 2026 Google aún no publica el día exacto en
+sus páginas de políticas; históricamente ha sido el 31 de agosto.
+
+La plataforma `android-37.0` ya está instalada en `D:\Android\Sdk`. Cuando toque
+migrar, revisa primero los cambios de redimensionamiento y orientación de
+Android 17 descritos en ese blog: en Android 16 los juegos (`appCategory="game"`)
+quedaron exentos, y hay que confirmar si la exención sigue en Android 17 antes de
+asumirlo.
+
+Fuente: <https://android-developers.googleblog.com/2026/02/prepare-your-app-for-resizability-and.html>

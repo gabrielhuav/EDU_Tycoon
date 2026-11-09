@@ -51,9 +51,11 @@ contraseña, extrae el certificado del bundle y compáralo. Ver
 | 1.1 | 2 | 13 jun 2026 | — |
 | 1.2 | 3 | 13 jun 2026 | 35 |
 | 1.3 | 4 | 22 jun 2026 | 35 |
-| **1.3.1** | **5** | **14 ago 2026** | **36** |
+| 1.3.1 | 5 | 14 ago 2026 (Alpha), luego Producción | 36 |
+| **1.4** | **6** | **en preparación (nov 2026)** | **36** |
 
-**El siguiente release debe usar `versionCode 6` o mayor.**
+**La 1.4 aún no se ha subido. El siguiente release después de ella debe usar `versionCode 7` o mayor.**
+Confirma siempre el último código en Play Console antes de subir.
 
 Trampa importante: **el repo y Play se desincronizan.** La versión 1.3 (código 4)
 nunca se commiteó — Kevin la construyó en local. Durante la migración, git decía
