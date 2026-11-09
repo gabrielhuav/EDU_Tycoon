@@ -1,5 +1,9 @@
 # El proyecto
 
+> Si es tu primer día en este código, lee antes
+> [06-guia-para-desarrolladores.md](06-guia-para-desarrolladores.md). Este archivo
+> es la referencia de versiones y comandos; aquél explica cómo funciona el juego.
+
 ## Estructura
 
 Proyecto libGDX multi-módulo con Gradle en **Groovy** (`build.gradle`, no `.kts`).

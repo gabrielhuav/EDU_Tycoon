@@ -3,14 +3,13 @@
 Esta carpeta existe para que una IA que abra este repo por primera vez pueda
 trabajar sin volver a descubrir todo desde cero. Léela antes de tocar nada.
 
-Última actualización: **15 de agosto de 2026**.
+Última actualización: **20 de agosto de 2026**.
 
 ## Qué es esto
 
 Juego de simulación educativa hecho con **libGDX** en Kotlin, publicado en Google
 Play como **EDU Tycoon** (paquete `io.moviles.IPN_Tycoon`). Proyecto escolar del
-IPN. Actualmente en **prueba cerrada (Alpha)**, con la solicitud de acceso a
-producción enviada el 15 ago 2026 y en revisión.
+IPN. **Acceso a producción concedido el 19 ago 2026.**
 
 ## Dónde está cada cosa
 
@@ -33,6 +32,7 @@ Ver [01-entorno-local.md](01-entorno-local.md).
 | [03-migracion-android-16.md](03-migracion-android-16.md) | Registro completo de la migración a API 36 (agosto 2026) |
 | [04-publicacion-play.md](04-publicacion-play.md) | Llave de firma, historial de versiones, cómo se hace un release |
 | [05-acceso-a-produccion.md](05-acceso-a-produccion.md) | Las 9 respuestas enviadas a Google, con fecha, y qué hacer si rechazan |
+| [06-guia-para-desarrolladores.md](06-guia-para-desarrolladores.md) | **Empieza aquí si eres nuevo.** Arquitectura, dónde tocar cada cosa, trampas |
 | [tools/](tools/) | Scripts de verificación de AAB y de alineación de páginas de 16 KB |
 
 ## Reglas de trabajo con este repo
@@ -57,10 +57,8 @@ Ver [01-entorno-local.md](01-entorno-local.md).
 el 14 ago 2026, cumpliendo el requisito de nivel de API de Play cuya fecha límite
 era el 31 de agosto de 2026.
 
-Solicitud de acceso a producción enviada el **15 ago 2026, 6:04 p.m.**, en
-revisión. Google responde en 7 días o menos, por correo al propietario de la
-cuenta. **Producción sigue inactiva**: que aprueben la solicitud solo habilita el
-permiso, no publica nada.
+**Acceso a producción concedido el 19 ago 2026.** Aprobado sin observaciones,
+cuatro días después de enviar la solicitud.
 
 ## Lo que quedó pendiente
 
