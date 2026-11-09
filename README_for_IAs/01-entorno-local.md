@@ -47,22 +47,66 @@ que ejecuta Gradle. Corretto 21 funciona.
 ### Android SDK
 
 ```
-C:\Users\gabri\AppData\Local\Android\Sdk
+D:\Android\Sdk
 ```
 
-Declarado en `local.properties` (que está en `.gitignore`, no lo commitees).
+**Se movió aquí en septiembre de 2026.** La ruta vieja
+(`C:\Users\gabri\AppData\Local\Android\Sdk`) ya no existe; si una
+herramienta la busca ahí, falla con "No such file". La variable de usuario
+`ANDROID_HOME` y `local.properties` (que está en `.gitignore`, no lo commitees)
+apuntan a la ruta nueva.
 
-| Componente | Versiones instaladas |
+| Componente | Versiones instaladas (8 nov 2026) |
 |---|---|
-| Platforms | android-33, android-34, android-35, **android-36**, android-36.1 |
+| Platforms | android-33, 34, 35, **36**, 36.1, **37.0** |
 | Build-tools | 30.0.3, 34.0.0, 35.0.0, **36.0.0** |
-| NDK | 25.1.8937393, 26.3.11579264, 27.0.12077973 |
+| NDK | 25.1, 26.3, 27.0, 28.2, 30.0 |
 | CMake | 3.22.1 |
-| platform-tools | `...\Sdk\platform-tools\adb.exe` |
+| platform-tools | `D:\Android\Sdk\platform-tools\adb.exe` |
+| Emulador | `D:\Android\Sdk\emulator\emulator.exe` (37.2.13) |
+| avdmanager | `D:\Android\Sdk\cmdline-tools\latest\bin\avdmanager.bat` |
+
+`android-37.0` es **Android 17**. No hace falta para compilar hoy, pero es la
+siguiente meta de Play: ver "Próximo requisito de nivel de API" en
+[03-migracion-android-16.md](03-migracion-android-16.md).
 
 El NDK está instalado pero **este proyecto no lo usa**: libGDX trae sus `.so` ya
-compiladas y no hay `externalNativeBuild`. Ver
-[03-migracion-android-16.md](03-migracion-android-16.md) para por qué eso importa.
+compiladas y no hay `externalNativeBuild`.
+
+### Emuladores
+
+Los AVD viven en `D:\Android\avd` (variable de usuario `ANDROID_AVD_HOME`). La
+nota `D:\Android\avd\LEEME_MOVIMIENTO_AVD.md` documenta el traslado.
+
+| AVD | Uso |
+|---|---|
+| **`EduTycoon_API36_16KB`** | **El de este proyecto.** Pixel 5, Android 16, kernel con páginas de 16 KB |
+| `AUTECH_C4_API36`, `AUTECH_C4_API36_16KB` | Proyecto AUTECH. No usar |
+| `FiveNightsESCOM_16KB`, `FiveNightsESCOM_Test` | Proyecto Five Nights. No usar |
+| `HolaMundo_Phone`, `Medium_Phone` | Genéricos |
+
+`EduTycoon_API36_16KB` tiene `disk.dataPartition.path=<temp>`: **cada arranque es
+un dispositivo limpio**, sin la app ni partidas de la sesión anterior. Es a
+propósito, para probar como un usuario que instala por primera vez. Arranque:
+
+```bash
+D:/Android/Sdk/emulator/emulator.exe -avd EduTycoon_API36_16KB
+```
+
+Sirve para comprobar en ejecución el requisito de 16 KB: si las nativas no
+estuvieran alineadas, la app no arrancaría en este emulador.
+
+### Otras herramientas
+
+| Herramienta | Ruta |
+|---|---|
+| bundletool 1.18.3 | `C:\Users\gabri\.autech\herramientas\bundletool-all-1.18.3.jar` |
+| scrcpy 5.0.1 (espejo de teléfono) | `C:\Users\gabri\.autech\herramientas\scrcpy-win64-v5.0.1\` |
+| Keystore de depuración | `C:\Users\gabri\.android\debug.keystore` |
+
+Viven en la carpeta de AUTECH porque se instalaron para ese proyecto, pero son
+genéricas. `bundletool` permite instalar en un emulador exactamente los APK que
+Play generaría a partir del AAB; ver [04-publicacion-play.md](04-publicacion-play.md).
 
 ### Android Studio
 
@@ -70,8 +114,9 @@ compiladas y no hay `externalNativeBuild`. Ver
 C:\Program Files\Android\Android Studio
 ```
 
-Se usa para dos cosas que no se hacen por línea de comandos: correr la app en un
-dispositivo y **generar el bundle firmado** (Build → Generate Signed App Bundle).
+Versión 2026.2.2. Se usa para dos cosas que no se hacen por línea de comandos:
+correr la app en un dispositivo desde el IDE y **generar el bundle firmado**
+(Build → Generate Signed App Bundle).
 
 ### Python
 
