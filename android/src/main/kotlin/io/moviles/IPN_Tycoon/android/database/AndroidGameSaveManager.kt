@@ -64,6 +64,7 @@ class AndroidGameSaveManager(
                     GameState.nombreJugador  = entity.nombreJugador
                     GameState.nombreEscuela  = entity.nombreEscuela
                     GameState.alumnosTotales = entity.alumnosTotales
+                    GameState.reputacionBonus = 0  // aún no se guarda en Room
                     deserializarEdificios(entity.edificiosJson)
                     Gdx.app.postRunnable { onDone(true) }
                 } else {

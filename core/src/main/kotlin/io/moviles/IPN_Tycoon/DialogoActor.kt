@@ -107,8 +107,10 @@ class DialogoActor(
 
             val style = TextField.TextFieldStyle(this.style)
             style.font = font
-            style.fontColor = negroPuro
-            style.cursor = Scene2DSkin.defaultSkin.newDrawable("white", guindaIPN).apply { minWidth = 2f }
+            style.fontColor = blancoPuro
+            style.focusedFontColor = blancoPuro
+            style.messageFontColor = Color.LIGHT_GRAY
+            style.cursor = Scene2DSkin.defaultSkin.newDrawable("white", Color.GOLD).apply { minWidth = 3f }
             this.style = style
 
             addListener(object : com.badlogic.gdx.scenes.scene2d.InputListener() {
@@ -149,11 +151,44 @@ class DialogoActor(
         })
     }
 
+    override fun sizeChanged() {
+        super.sizeChanged()
+        actualizarPosicionesLayout()
+    }
+
+    private fun actualizarPosicionesLayout() {
+        val currentW = if (width > 0f) width else (stage?.width ?: 800f)
+        val currentH = if (height > 0f) height else (stage?.height ?: 480f)
+        val offsetX = ((currentW - 800f) / 2f).coerceAtLeast(0f)
+
+        overlayOscuro.setBounds(0f, 0f, currentW, currentH)
+        fondoBordeGuinda.setPosition(offsetX + 20f, 20f)
+        fondoBlancoInterno.setPosition(offsetX + 24f, 24f)
+        labelNombre.setPosition(offsetX + 50f, 135f)
+        labelTexto.setPosition(offsetX + 50f, 40f)
+        imagenPersonaje.setPosition(offsetX + 500f, 170f)
+
+        if (inputNombre.isVisible) {
+            val centroX = currentW / 2f
+            val posYInput = 320f
+            labelPromptInput.pack()
+            labelPromptInput.setPosition(centroX - labelPromptInput.width / 2f, posYInput + 100f)
+            inputNombre.setPosition(centroX - inputNombre.width / 2f, posYInput)
+            fondoInput.setBounds(
+                inputNombre.x - 10f,
+                inputNombre.y - 10f,
+                inputNombre.width + 20f,
+                inputNombre.height + 20f
+            )
+        }
+    }
+
     fun mostrarConversacion(dialogos: List<Dialogo>) {
         this.listaDialogos = dialogos
         this.indiceActual = 0
         this.contadorInputs = 0
         this.isVisible = true
+        actualizarPosicionesLayout()
         actualizarContenido()
     }
 
@@ -194,19 +229,7 @@ class DialogoActor(
 
         // Texto guía basado en lo que se pregunta
         labelPromptInput.setText(pregunta)
-
-        val centroX = 800f / 2f
-        val posYInput = 320f
-
-        labelPromptInput.setPosition(centroX - labelPromptInput.width / 2f, posYInput + 100f)
-        inputNombre.setPosition(centroX - inputNombre.width / 2f, posYInput)
-
-        fondoInput.setBounds(
-            inputNombre.x - 10f,
-            inputNombre.y - 10f,
-            inputNombre.width + 20f,
-            inputNombre.height + 20f
-        )
+        actualizarPosicionesLayout()
 
         stage?.keyboardFocus = inputNombre
         Gdx.input.setOnscreenKeyboardVisible(true)

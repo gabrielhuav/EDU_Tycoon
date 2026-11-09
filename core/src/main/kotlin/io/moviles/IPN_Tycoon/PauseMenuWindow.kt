@@ -42,10 +42,13 @@ class PauseMenuWindow(
             }
             row()
 
-            val audioBtn = textButton(audioLabel()) {}
+            val audioBtn = textButton(io.moviles.IPN_Tycoon.engine.AudioManager.obtenerTextoBoton()) {
+                color = io.moviles.IPN_Tycoon.engine.AudioManager.obtenerColorBoton()
+            }
             audioBtn.onChange {
-                GameState.musicaActiva = !GameState.musicaActiva
-                audioBtn.setText(audioLabel())
+                io.moviles.IPN_Tycoon.engine.AudioManager.alternarAudio()
+                audioBtn.setText(io.moviles.IPN_Tycoon.engine.AudioManager.obtenerTextoBoton())
+                audioBtn.color = io.moviles.IPN_Tycoon.engine.AudioManager.obtenerColorBoton()
             }
             row()
 
@@ -60,9 +63,6 @@ class PauseMenuWindow(
         pack()
         centerWindow()
     }
-
-    private fun audioLabel() =
-        if (GameState.musicaActiva) "Audio: ON" else "Audio: OFF"
 
     fun show(stage: Stage) { stage.addActor(this) }
 }

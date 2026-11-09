@@ -26,16 +26,24 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Scaling
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import io.moviles.IPN_Tycoon.engine.AudioManager
+import io.moviles.IPN_Tycoon.engine.BuildingIncomeManager
+import io.moviles.IPN_Tycoon.engine.CycleTimeController
+import io.moviles.IPN_Tycoon.engine.DecisionEngine
+import io.moviles.IPN_Tycoon.engine.DecisionEvent
 import io.moviles.IPN_Tycoon.engine.EconomyEngine
 import io.moviles.IPN_Tycoon.engine.EstudiantesEngine
 import io.moviles.IPN_Tycoon.engine.EventEngine
 import io.moviles.IPN_Tycoon.engine.EventoEfecto
 import io.moviles.IPN_Tycoon.engine.GameCycleEngine
 import io.moviles.IPN_Tycoon.engine.GameEvent
+import io.moviles.IPN_Tycoon.engine.OpcionDecision
+import io.moviles.IPN_Tycoon.engine.VelocidadCiclo
 import ktx.actors.onChange
 import ktx.app.clearScreen
 import ktx.assets.toInternalFile
@@ -48,8 +56,16 @@ class GameScreen(game: Main) : BaseScreen(game) {
     private val economyEngine     = EconomyEngine()
     private val estudiantesEngine = EstudiantesEngine()
     private val eventEngine       = EventEngine { evento -> showEventToast(evento) }
+    private val decisionEngine    = DecisionEngine { evento -> mostrarDecision(evento) }
+    private var decisionWindow: DecisionEventWindow? = null
     private var cycleTimer        = 0f
+
+    // ── Guardado automático (cada ciclo, al pausar y al salir) ───────
+    private val autoGuardado = AutoGuardado(game.saveManager) { ok ->
+        if (!ok) Gdx.app.error("AUTOSAVE", "No se pudo guardar automáticamente")
+    }
     private val cycleDuration     = 30f
+    private val cycleTimeController = CycleTimeController(cycleDuration)
 
     // ── Ajustes de Optimización ──────────────────────────────────────
     private val maxZoom                = 7.0f
@@ -68,6 +84,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         cycleEngine.addListener(economyEngine)
         cycleEngine.addListener(estudiantesEngine)
         cycleEngine.addListener(eventEngine)
+        cycleEngine.addListener(decisionEngine)
     }
 
     // ── Mapa ──────────────────────────────────────────────────────────
@@ -193,18 +210,22 @@ class GameScreen(game: Main) : BaseScreen(game) {
     }
 
     // ── HUD ───────────────────────────────────────────────────────────
-    private var moneyLabel:       Label? = null
-    private var alumnosLabel:     Label? = null
-    private var reputationLabel:  Label? = null
-    private var lastMoney:        Long = -1
-    private var lastStudents:     Int = -1
-    private var lastReputation:   Int = -1
-    private var toastLine1:       Label? = null
-    private var toastLine2:       Label? = null
-    private var toastTable:       Table? = null
-    private var eventTituloLabel: Label? = null
-    private var eventEfectoLabel: Label? = null
-    private var eventTable:       Table? = null
+    private var moneyLabel:         Label? = null
+    private var alumnosLabel:       Label? = null
+    private var reputationLabel:    Label? = null
+    private var cycleTimerLabel:    Label? = null
+    private var cycleProgressFill:  Image? = null
+    private var speedButton:        TextButton? = null
+    private val cycleBarMaxWidth:   Float = 110f
+    private var lastMoney:          Long = -1
+    private var lastStudents:       Int = -1
+    private var lastReputation:     Int = -1
+    private var toastLine1:         Label? = null
+    private var toastLine2:         Label? = null
+    private var toastTable:         Table? = null
+    private var eventTituloLabel:   Label? = null
+    private var eventEfectoLabel:   Label? = null
+    private var eventTable:         Table? = null
 
     // ── Estado ────────────────────────────────────────────────────────
     var modoCarga: Boolean = false
@@ -216,6 +237,43 @@ class GameScreen(game: Main) : BaseScreen(game) {
         pixmap.fillCircle(32, 32, 30)
         Texture(pixmap).apply { setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) }
     }
+
+    // ── Burbujas interactivas de ingresos (Tycoon) ────────────────────
+    private var bubbleAnimTimer = 0f
+    private val bubbleTexture: Texture by lazy {
+        try {
+            val file = "bubble_coin.png".toInternalFile()
+            if (file.exists()) {
+                Texture(file).apply {
+                    setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                }
+            } else {
+                crearTexturaBurbujaFallback()
+            }
+        } catch (_: Exception) {
+            crearTexturaBurbujaFallback()
+        }
+    }
+
+    private fun crearTexturaBurbujaFallback(): Texture {
+        val pixmap = Pixmap(128, 128, Pixmap.Format.RGBA8888)
+        pixmap.setColor(Color(0.85f, 0.7f, 0.1f, 1f))
+        pixmap.fillCircle(64, 64, 60)
+        pixmap.setColor(Color(1f, 0.85f, 0f, 1f))
+        pixmap.fillCircle(64, 64, 52)
+        val tex = Texture(pixmap)
+        pixmap.dispose()
+        return tex.apply { setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) }
+    }
+
+    private data class FloatingRevenueEffect(
+        val text: String,
+        var worldX: Float,
+        var worldY: Float,
+        var life: Float = 0f,
+        val maxLife: Float = 1.3f
+    )
+    private val floatingEffects = mutableListOf<FloatingRevenueEffect>()
 
     // ── OPTIMIZACIÓN: Datos de renderizado pre-calculados ─────────────
     /**
@@ -288,6 +346,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
     // ─────────────────────────────────────────────────────────────────
     override fun show() {
         super.show()
+        io.moviles.IPN_Tycoon.engine.AudioManager.iniciarMusicaAmbiental()
         val skin   = Scene2DSkin.defaultSkin
         val fuente = skin.getFont("default-font")
 
@@ -301,7 +360,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
 
         if (backgroundImage == null) {
             backgroundImage = Image(backgroundTexture).apply {
-                setScaling(Scaling.fit)
+                setScaling(Scaling.fill)
                 setAlign(Align.center)
             }
             backgroundImage?.setFillParent(true)
@@ -396,7 +455,12 @@ class GameScreen(game: Main) : BaseScreen(game) {
         lastStudents   = -1
         lastReputation = -1
         cycleTimer     = 0f
+        cycleTimeController.reiniciar()
         hudDirty       = true
+
+        // stage.clear() ya quitó la ventana; una decisión sin responder se descarta
+        decisionWindow = null
+        decisionEngine.reset()
 
         val multiplexer = InputMultiplexer()
         multiplexer.addProcessor(stage)
@@ -404,6 +468,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
         val gestureDetector = GestureDetector(object : GestureAdapter() {
 
             override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean {
+                // Con una decisión abierta no se pueden abrir edificios
+                if (decisionWindow != null) return true
                 val m = map ?: return false
                 val worldTouch = Vector3(x, y, 0f)
                 camera.unproject(worldTouch)
@@ -417,6 +483,29 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 // Si tocamos una estructura, se abrirá la nueva abajo.
                 currentInfoWindow?.remove()
                 currentInfoWindow = null
+
+                // 1. PRIORIDAD: Comprobar si se tocó alguna burbuja de ingresos interactiva
+                for (entry in renderEntries) {
+                    if (entry.propiedad.comprada && BuildingIncomeManager.tieneIngresoListo(entry.propiedad.id)) {
+                        val bubblePos = calcularPosicionBurbuja(entry)
+                        val touchRadius = 280f * camera.zoom.coerceAtMost(3.5f)
+                        val dist = Vector2.dst(worldTouch.x, worldTouch.y, bubblePos.x, bubblePos.y)
+                        if (dist <= touchRadius) {
+                            val recolectado = BuildingIncomeManager.recolectar(entry.propiedad.id)
+                            if (recolectado > 0L) {
+                                AudioManager.reproducirSonidoDinero()
+                                floatingEffects.add(FloatingRevenueEffect(
+                                    text = "+$${formatMoney(recolectado)}",
+                                    worldX = bubblePos.x,
+                                    worldY = bubblePos.y + 60f
+                                ))
+                                hudDirty = true
+                                Gdx.app.log("TYCOON", "Recaudados \$${recolectado} en ${entry.propiedad.nombre}")
+                                return true
+                            }
+                        }
+                    }
+                }
 
                 try {
                     val logicaLayer = m.layers["Logica_Clics"] ?: return false
@@ -469,6 +558,29 @@ class GameScreen(game: Main) : BaseScreen(game) {
         renderEntries.find { it.propiedad.id == propId }?.let { entry ->
             entry.cachedTex = getBuildingTexture(entry.propiedad)
         }
+    }
+
+    /**
+     * Calcula la posición en el mundo de la burbuja interactiva de recaudación
+     * encima del edificio según su escala actual y offsets de LOD.
+     */
+    private fun calcularPosicionBurbuja(entry: RenderEntry): Vector2 {
+        val p = entry.propiedad
+        val zoom = camera.zoom
+        val useSmallScale = zoom > maxZoomForFullBuildings
+        var drawY = entry.bWorldY
+        var scale = 1f
+
+        if (useSmallScale) {
+            scale = 0.72f
+            smallBuildingYOffset[p.id]?.let { offset ->
+                drawY += offset * (zoom - maxZoomForFullBuildings) / 2f
+            }
+        }
+
+        val h = p.renderH * scale
+        val bubbleY = drawY + h * 0.90f
+        return Vector2(entry.bWorldX, bubbleY)
     }
 
     /**
@@ -590,12 +702,51 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 background = whiteDrawable
                 pad(8f)
                 add(Label("$ ", goldStyle))
-                add(moneyLabel).padRight(20f)
+                add(moneyLabel).padRight(16f)
                 add(Label("Alumnos: ", cyanStyle))
-                add(alumnosLabel).padRight(20f)
-                add(Label("Reputación: ", goldStyle)).padRight(5f)
+                add(alumnosLabel).padRight(16f)
+                add(Label("Reputación: ", goldStyle)).padRight(4f)
                 reputationLabel = Label("0%", goldStyle).apply { setFontScale(1.1f) }
-                add(reputationLabel)
+                add(reputationLabel).padRight(18f)
+
+                // ── Barra de progreso del ciclo escolar + Control de velocidad ──
+                val cycleInfoTable = Table().apply {
+                    cycleTimerLabel = Label("Ciclo: 30s", Label.LabelStyle(font, Color.LIGHT_GRAY)).apply {
+                        setFontScale(0.9f)
+                    }
+                    add(cycleTimerLabel).left().padBottom(3f).row()
+
+                    val barTrack = Table().apply {
+                        background = skin.newDrawable("white", Color(0.18f, 0.18f, 0.24f, 0.95f))
+                        val barGroup = com.badlogic.gdx.scenes.scene2d.Group().apply {
+                            setSize(cycleBarMaxWidth, 8f)
+                        }
+                        val fillImg = Image(skin.newDrawable("white", Color.WHITE)).apply {
+                            color = Color.CYAN
+                            setBounds(0f, 0f, 0f, 8f)
+                        }
+                        cycleProgressFill = fillImg
+                        barGroup.addActor(fillImg)
+                        add(barGroup).width(cycleBarMaxWidth).height(8f)
+                    }
+                    add(barTrack).width(cycleBarMaxWidth).height(8f).left()
+                }
+                add(cycleInfoTable).padRight(10f)
+
+                val btnSpeed = TextButton("1x", skin).apply {
+                    color = Color.GREEN
+                    onChange {
+                        val nuevaVel = cycleTimeController.alternarVelocidad()
+                        setText(nuevaVel.etiqueta)
+                        color = when (nuevaVel) {
+                            VelocidadCiclo.NORMAL -> Color.GREEN
+                            VelocidadCiclo.RAPIDO -> Color.CYAN
+                            VelocidadCiclo.PAUSA  -> Color.ORANGE
+                        }
+                    }
+                }
+                speedButton = btnSpeed
+                add(btnSpeed).width(68f).height(34f)
             }).left().expandX().pad(10f)
 
             add(scene2d.image(menuIconTexture) {
@@ -717,6 +868,54 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 r.batch.color = Color.WHITE
             }
 
+            // ====================== BURBUJAS DE RECAUDACIÓN TYCOON ======================
+            bubbleAnimTimer += delta
+            val bobOffset = MathUtils.sin(bubbleAnimTimer * 4.5f) * 20f
+            val bubblePulse = 1f + 0.08f * MathUtils.sin(bubbleAnimTimer * 5.5f)
+
+            for (entry in renderEntries) {
+                if (!entry.propiedad.comprada) continue
+                if (!BuildingIncomeManager.tieneIngresoListo(entry.propiedad.id)) continue
+
+                val bubblePos = calcularPosicionBurbuja(entry)
+                val baseSize = 360f * bubblePulse
+                val drawBX = bubblePos.x - baseSize / 2f
+                val drawBY = bubblePos.y + bobOffset - baseSize / 2f
+
+                // Dibujar burbuja circular interactiva
+                r.batch.color = Color.WHITE
+                r.batch.draw(bubbleTexture, drawBX, drawBY, baseSize, baseSize)
+
+                // Etiqueta flotante con el importe listo para recaudar
+                val monto = BuildingIncomeManager.obtenerGananciasListas(entry.propiedad.id)
+                val labelTexto = "+$${formatMoney(monto)}"
+                val layout = GlyphLayout(worldFont, labelTexto)
+
+                val labelX = bubblePos.x - layout.width / 2f
+                val labelY = drawBY - 12f
+                worldFont.color = Color.GREEN
+                worldFont.draw(r.batch, layout, labelX, labelY)
+            }
+
+            // ====================== EFECTOS FLOTANTES DE DINERO (POPUP ANIMADO) ======================
+            val iterator = floatingEffects.iterator()
+            while (iterator.hasNext()) {
+                val effect = iterator.next()
+                effect.life += delta
+                effect.worldY += 160f * delta
+
+                val progress = effect.life / effect.maxLife
+                if (progress >= 1f) {
+                    iterator.remove()
+                    continue
+                }
+
+                val alpha = (1f - progress).coerceIn(0f, 1f)
+                val layout = GlyphLayout(worldFont, effect.text)
+                worldFont.color = Color(1f, 0.85f, 0.1f, alpha)
+                worldFont.draw(r.batch, layout, effect.worldX - layout.width / 2f, effect.worldY)
+            }
+
         } catch (e: Exception) {
             Gdx.app.error("RENDER", "Error en renderizado de mundo: ${e.message}")
         }
@@ -725,12 +924,22 @@ class GameScreen(game: Main) : BaseScreen(game) {
     }
 
     private fun actualizarCicloDeJuego(delta: Float) {
-        cycleTimer += delta
-        while (cycleTimer >= cycleDuration) {
-            cycleTimer -= cycleDuration
+        // Juego en pausa mientras haya una decisión sin responder o el reloj esté en PAUSA
+        val ciclosCompletados = cycleTimeController.avanzar(delta, bloqueado = decisionWindow != null)
+        cycleTimer = cycleTimeController.tiempoTranscurrido
+        repeat(ciclosCompletados) {
+            if (decisionWindow != null) return@repeat
             cycleEngine.advanceCycle()
-            hudDirty = true   // El ciclo cambia dinero/alumnos → invalidar caché HUD
-            economyEngine.lastResult?.let { showCycleToast(it) }
+            hudDirty = true   // El ciclo avanza semestre y eventos → invalidar caché HUD
+            autoGuardado.alTerminarCiclo()
+        }
+
+        // Actualizar ciclos independientes por edificio respetando la velocidad seleccionada (1x / 2x / PAUSA)
+        if (decisionWindow == null && !cycleTimeController.estaPausado) {
+            val completados = BuildingIncomeManager.actualizar(delta * cycleTimeController.velocidadActual.multiplicador)
+            if (completados.isNotEmpty()) {
+                hudDirty = true
+            }
         }
     }
 
@@ -751,9 +960,10 @@ class GameScreen(game: Main) : BaseScreen(game) {
             alumnosLabel?.setText(formatAlumnos(lastStudents))
         }
 
-        val reputation = if (cachedTotalMaxLevel > 0) {
+        val progresoEdificios = if (cachedTotalMaxLevel > 0) {
             ((cachedCurrentLevel.toFloat() / cachedTotalMaxLevel) * 100).toInt().coerceIn(0, 100)
         } else 0
+        val reputation = GameState.reputacionTotal(progresoEdificios)
 
         if (reputation != lastReputation) {
             lastReputation = reputation
@@ -764,11 +974,41 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 else             -> Color.WHITE
             }
         }
+
+        // Actualizar barra y etiqueta del ciclo escolar en tiempo real
+        val segRestantes = cycleTimeController.segundosRestantes()
+        val numCiclo = GameState.ciclosJugados + 1
+        cycleTimerLabel?.setText(
+            if (cycleTimeController.estaPausado) "Ciclo #$numCiclo (PAUSA)"
+            else "Ciclo #$numCiclo (${segRestantes}s)"
+        )
+        cycleProgressFill?.let { fill ->
+            fill.width = cycleBarMaxWidth * cycleTimeController.progreso()
+            fill.color = when (cycleTimeController.velocidadActual) {
+                VelocidadCiclo.PAUSA  -> Color.ORANGE
+                VelocidadCiclo.RAPIDO -> Color.GOLD
+                VelocidadCiclo.NORMAL -> Color.CYAN
+            }
+        }
+    }
+
+    // ── Ciclo de vida: guardar al pausar la app o salir de la partida ─
+    /** La app pasa a segundo plano (botón Home, llamada, cambiar de app). */
+    override fun pause() {
+        super.pause()
+        if (modoCarga) autoGuardado.guardarAhora()
+    }
+
+    /** Se sale de la partida (menú principal o botón Atrás). */
+    override fun hide() {
+        super.hide()
+        if (modoCarga) autoGuardado.guardarAhora()
     }
 
     // ── Resize / Dispose ──────────────────────────────────────────────
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
+        dialogoActor?.setSize(stage.width, stage.height)
         camera.viewportWidth  = width.toFloat()
         camera.viewportHeight = height.toFloat()
         camera.update()
@@ -779,6 +1019,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         backgroundTexture.dispose()
         menuIconTexture.dispose()
         highlightTexture.dispose()
+        bubbleTexture.dispose()
         worldFont.dispose()
         labelBgTexture.dispose()
         buildingTextureCache.values.forEach { it?.dispose() }
@@ -864,6 +1105,41 @@ class GameScreen(game: Main) : BaseScreen(game) {
         toast.setPosition((stage.width - toast.width) / 2f, stage.height * 0.22f)
         toast.addAction(Actions.sequence(
             Actions.fadeIn(0.25f), Actions.delay(5f), Actions.fadeOut(0.4f)
+        ))
+    }
+
+    // ── Eventos de decisión ───────────────────────────────────────────
+    private fun mostrarDecision(evento: DecisionEvent) {
+        currentInfoWindow?.remove()
+        currentInfoWindow = null
+
+        decisionWindow = DecisionEventWindow(
+            evento      = evento,
+            puedeElegir = decisionEngine::puedeElegir
+        ) { opcion ->
+            decisionWindow = null
+            if (decisionEngine.elegir(opcion)) {
+                hudDirty = true
+                showDecisionToast(evento, opcion)
+            }
+        }
+        decisionWindow?.show(stage)
+    }
+
+    private fun showDecisionToast(evento: DecisionEvent, opcion: OpcionDecision) {
+        val toast = eventTable ?: return
+        val positivo = opcion.dinero >= 0 && opcion.reputacion >= 0
+        val color = if (positivo) Color.GREEN else Color.ORANGE
+        eventTituloLabel?.setText("${evento.titulo}: ${opcion.texto}")
+        eventTituloLabel?.setColor(color)
+        eventEfectoLabel?.setText(DecisionEventWindow.efectos(opcion))
+        eventEfectoLabel?.setColor(color)
+        toast.clearActions()
+        toast.color.a = 0f
+        toast.invalidateHierarchy(); toast.pack()
+        toast.setPosition((stage.width - toast.width) / 2f, stage.height * 0.22f)
+        toast.addAction(Actions.sequence(
+            Actions.fadeIn(0.25f), Actions.delay(4f), Actions.fadeOut(0.4f)
         ))
     }
 
