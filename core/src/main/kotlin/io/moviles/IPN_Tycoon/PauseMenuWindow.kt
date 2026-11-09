@@ -75,10 +75,7 @@ class StatsWindow : VisWindow("Estadísticas") {
         closeOnEscape()
         isModal = false
 
-        val edificios     = PropiedadRepository.propiedades.values.count { it.comprada }
-        val alumnos       = PropiedadRepository.propiedades.values
-            .filter { it.comprada }.sumOf { it.baseAlumnos * it.nivel }
-        val ingresosCiclo = alumnos * 100L
+        val st = StatsEscuela.calcular()
 
         add(scene2d.table {
 
@@ -87,15 +84,23 @@ class StatsWindow : VisWindow("Estadísticas") {
             row()
 
             label("Edificios:") { color = Color.CYAN }.cell(padRight = 10f, padBottom = 8f)
-            label("$edificios comprados").cell(padBottom = 8f)
+            label("${st.edificios} comprados").cell(padBottom = 8f)
             row()
 
-            label("Alumnos:") { color = Color.GREEN }.cell(padRight = 10f, padBottom = 8f)
-            label("$alumnos").cell(padBottom = 8f)
+            label("Alumnos/ciclo:") { color = Color.GREEN }.cell(padRight = 10f, padBottom = 8f)
+            label("${st.alumnos}").cell(padBottom = 8f)
             row()
 
             label("Ingresos/ciclo:") { color = Color.YELLOW }.cell(padRight = 10f, padBottom = 8f)
-            label("\$${fmt(ingresosCiclo)}").cell(padBottom = 8f)
+            label("\$${fmt(st.ingresosCiclo)}").cell(padBottom = 8f)
+            row()
+
+            label("Mercado:") { color = Color.ORANGE }.cell(padRight = 10f, padBottom = 8f)
+            label("Tú ${st.cuotaJugadorPct}% | Rival ${st.cuotaRivalPct}%").cell(padBottom = 8f)
+            row()
+
+            label("Rival:") { color = Color.SALMON }.cell(padRight = 10f, padBottom = 8f)
+            label("${st.edificiosRival} edif. | \$${fmt(st.dineroRival)}").cell(padBottom = 8f)
             row()
 
             label("Ciclos:") { color = Color.LIGHT_GRAY }.cell(padRight = 10f, padBottom = 8f)
