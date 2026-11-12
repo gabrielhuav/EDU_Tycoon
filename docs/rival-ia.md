@@ -93,7 +93,7 @@ Reglas de `ReglaFinPartida` (solo desde el ciclo 10, `CICLO_MINIMO`):
 
 ## Pruebas automatizadas
 
-`./gradlew :core:test` ejecuta **54 pruebas, 0 fallos, 0 omitidas**, en 9 clases:
+`./gradlew :core:test` ejecuta **48 pruebas, 0 fallos, 0 omitidas**, en 10 clases:
 
 | Clase | Pruebas |
 |---|---|
@@ -105,6 +105,7 @@ Reglas de `ReglaFinPartida` (solo desde el ciclo 10, `CICLO_MINIMO`):
 | `engine.RivalEngineTest` | 4 |
 | `engine.GameCycleEngineTest` | 3 |
 | `engine.PipelineCompletoTest` | 2 |
+| `StatsEscuelaTest` | 4 |
 | `GameStateTest` | 3 |
 
 ## QA manual en dispositivo
@@ -140,10 +141,15 @@ razonable y el ajuste fino requiere playtesting humano con testers.
 
 ## Limitaciones conocidas
 
-- El título del diálogo de victoria se ve como "Victoria!" sin el signo "¡": la fuente bitmap no incluye ese glifo. **En corrección** en la rama del issue #11.
-- El balance del rival se validó por simulación (ver arriba); falta playtesting humano con los testers de la prueba cerrada.
-- `StatsWindow` (menú de pausa) **no** aplica el factor de atracción ni el rival: calcula alumnos como `Σ baseAlumnos*nivel` e ingresos como `alumnos * 100`. Está asignado a la contribución de Javier.
-- `DatabaseTest` instrumentado (`android/src/androidTest/.../DatabaseTest.kt`) ya estaba desactualizado antes de esta función. Está asignado a la contribución de Javier.
+- El balance del rival se validó por simulación (ver arriba) y en partidas manuales; conviene más playtesting con jugadores reales.
+- La ventana de edificio muestra el ingreso base (×100) sin el factor de mercado; el HUD y las Estadísticas muestran lo que realmente se acredita.
+- `DatabaseProvider` conserva `fallbackToDestructiveMigration()` para saltos de versión distintos de 4→5.
+- El tamaño de texto del sistema no afecta al juego (limitación de libGDX, previa a esta función).
+
+Resuelto en esta contribución: el signo «¡» del diálogo de victoria (fuente
+FreeType generada desde `assets/font.ttf`), `StatsWindow` con `MercadoAlumnos`
+y la cuota Tú/Rival, y `DatabaseTest` reparado con la prueba de
+`MIGRATION_4_5`. Matriz completa en [`docs/pruebas.md`](pruebas.md).
 
 ## Cómo probar
 
@@ -155,3 +161,7 @@ adb logcat -s RIVAL
 ```
 
 (Ajustar el nombre del APK si `assembleDebug` genera otro en `android/build/outputs/apk/debug/`.)
+
+## Uso de asistentes de IA
+
+Para el desarrollo de Edutycoon-IA se utilizó **Claude (Anthropic) a través de Claude Code** como apoyo en la implementación del módulo `rival/`, su integración con el ciclo de juego, las pruebas unitarias y la documentación técnica. El alcance, la validación en dispositivo físico y la revisión del código fueron realizadas por los integrantes del equipo.
