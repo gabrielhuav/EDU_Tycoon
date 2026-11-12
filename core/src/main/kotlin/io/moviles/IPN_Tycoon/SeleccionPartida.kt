@@ -88,6 +88,7 @@ class SeleccionPartida(game: Main) : BaseScreen(game) {
                             style = customButtonStyle
                             onChange {
                                 GameState.reset(GameState.DINERO_INICIAL_REAL)
+                                io.moviles.IPN_Tycoon.rival.RivalState.reset()
                                 PropiedadRepository.resetProgress()
                                 val screen = game.getScreen<GameScreen>()
                                 screen.modoCarga = false

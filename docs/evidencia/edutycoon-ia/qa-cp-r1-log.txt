@@ -1,0 +1,2 @@
+--------- beginning of main
+11-08 17:06:51.942 31114 31215 I RIVAL   : Compra cafeteria por 150000 (dinero=350000)

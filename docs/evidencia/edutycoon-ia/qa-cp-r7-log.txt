@@ -1,0 +1,10 @@
+--------- beginning of main
+11-08 17:06:51.942 31114 31215 I RIVAL   : Compra cafeteria por 150000 (dinero=350000)
+11-08 17:07:22.035 31114 31215 I RIVAL   : Compra Mac_and_cheese por 120000 (dinero=242500)
+11-08 17:07:51.882 31114 31215 I RIVAL   : Estado EXPANDIR -> COMPETIR
+11-08 17:07:51.882 31114 31215 I RIVAL   : Mejora cafeteria a nivel 2 por 150000 (dinero=111250)
+11-08 17:08:21.892 31114 31215 I RIVAL   : Estado COMPETIR -> AHORRAR
+11-08 17:08:51.792 31114 31215 I RIVAL   : Estado AHORRAR -> COMPETIR
+11-08 17:08:51.792 31114 31215 I RIVAL   : Mejora Mac_and_cheese a nivel 2 por 120000 (dinero=53750)
+11-08 17:09:22.107 31114 31215 I RIVAL   : Estado COMPETIR -> AHORRAR
+11-08 17:10:51.915 31114 31215 I RIVAL   : Fin de partida: DERROTA (Tú 0% | Rival 100%)

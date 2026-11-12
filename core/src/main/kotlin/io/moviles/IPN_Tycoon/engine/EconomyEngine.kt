@@ -1,7 +1,7 @@
 package io.moviles.IPN_Tycoon.engine
 
 import io.moviles.IPN_Tycoon.GameState
-import io.moviles.IPN_Tycoon.PropiedadRepository
+import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 
 /**
  * Calcula ingresos pasivos de los edificios comprados cada ciclo.
@@ -12,17 +12,14 @@ class EconomyEngine : GameCycleListener {
 
     override val resolutionOrder = ResolutionOrder.ECONOMY
 
-    private val INGRESO_POR_ALUMNO = 100L  // Aumentado de 50L a 100L para acelerar economía
-
     data class CycleResult(val ingresos: Long)
 
     var lastResult: CycleResult? = null
         private set
 
     override fun onResolveCycle(cycle: Int) {
-        val ingresosTotales = PropiedadRepository.propiedades.values
-            .filter { it.comprada }
-            .sumOf { it.baseAlumnos * it.nivel * INGRESO_POR_ALUMNO }
+        // Ingreso base x factor de atraccion (cuota de mercado frente al rival).
+        val ingresosTotales = MercadoAlumnos.ingresoJugador()
 
         lastResult = CycleResult(ingresosTotales)
         GameState.acreditar(ingresosTotales)

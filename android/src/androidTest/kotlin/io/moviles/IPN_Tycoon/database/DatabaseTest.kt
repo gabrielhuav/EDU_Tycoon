@@ -5,10 +5,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.moviles.IPN_Tycoon.android.database.AppDatabase
 import io.moviles.IPN_Tycoon.data.local.entities.EscuelaEntity
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,12 +20,11 @@ class DatabaseTest {
 
     @Before
     fun createDb() {
-        // Usamos una base de datos en memoria para que se borre al terminar la prueba
+        // Base en memoria: se descarta al terminar cada prueba.
         db = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             AppDatabase::class.java
-        ).allowMainThreadQueries() // Solo para pruebas
-        .build()
+        ).allowMainThreadQueries().build()
     }
 
     @After
@@ -33,12 +33,43 @@ class DatabaseTest {
     }
 
     @Test
-    fun writeAndReadEscuela() = runBlocking {
-        val escuela = EscuelaEntity(id = 1, nombre = "ESCOM", nivel = 5, cant_alumnos = 100)
-        db.escuelaDao().insertEscuela(escuela)
+    fun guardarYLeerPorSlot() = runBlocking {
+        db.escuelaDao().guardar(
+            EscuelaEntity(slot = 1, nombreEscuela = "ESCOM", alumnosTotales = 100, rivalJson = "500000|EXPANDIR|0|0|0|")
+        )
 
-        val allEscuelas = db.escuelaDao().getAllEscuelas().first()
-        assertEquals("ESCOM", allEscuelas[0].nombre)
-        assertEquals(100, allEscuelas[0].cant_alumnos)
+        val leida = db.escuelaDao().getBySlot(1)
+        assertNotNull(leida)
+        assertEquals("ESCOM", leida!!.nombreEscuela)
+        assertEquals(100, leida.alumnosTotales)
+        assertEquals("500000|EXPANDIR|0|0|0|", leida.rivalJson)
+    }
+
+    @Test
+    fun slotInexistenteDevuelveNull() = runBlocking {
+        assertNull(db.escuelaDao().getBySlot(2))
+    }
+
+    @Test
+    fun guardarMismoSlotReemplazaLaFila() = runBlocking {
+        val dao = db.escuelaDao()
+        dao.guardar(EscuelaEntity(slot = 1, nombreEscuela = "ESCOM", dinero = 10L))
+        dao.guardar(EscuelaEntity(slot = 1, nombreEscuela = "ESIME", dinero = 20L))
+
+        val leida = dao.getBySlot(1)!!
+        assertEquals("ESIME", leida.nombreEscuela)
+        assertEquals(20L, leida.dinero)
+    }
+
+    @Test
+    fun eliminarSlotSoloBorraEseSlot() = runBlocking {
+        val dao = db.escuelaDao()
+        dao.guardar(EscuelaEntity(slot = 1, nombreEscuela = "ESCOM"))
+        dao.guardar(EscuelaEntity(slot = 2, nombreEscuela = "ESIME"))
+
+        dao.eliminarSlot(1)
+
+        assertNull(dao.getBySlot(1))
+        assertNotNull(dao.getBySlot(2))
     }
 }

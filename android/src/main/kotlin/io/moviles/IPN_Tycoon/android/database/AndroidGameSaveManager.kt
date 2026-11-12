@@ -6,6 +6,7 @@ import io.moviles.IPN_Tycoon.GameSaveManager
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.PropiedadRepository
 import io.moviles.IPN_Tycoon.data.local.entities.EscuelaEntity
+import io.moviles.IPN_Tycoon.rival.RivalState
 import io.moviles.IPN_Tycoon.data.repositories.EscuelaRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +30,8 @@ class AndroidGameSaveManager(
                     edificiosJson  = serializarEdificios(),
                     ciclosJugados  = GameState.ciclosJugados,
                     alumnosTotales = calcularAlumnos(),
-                    fechaGuardado  = System.currentTimeMillis()
+                    fechaGuardado  = System.currentTimeMillis(),
+                    rivalJson      = RivalState.serializar()
                 )
                 repository.guardar(entity)
                 GameState.saveId     = slot
@@ -65,6 +67,7 @@ class AndroidGameSaveManager(
                     GameState.nombreEscuela  = entity.nombreEscuela
                     GameState.alumnosTotales = entity.alumnosTotales
                     deserializarEdificios(entity.edificiosJson)
+                    RivalState.deserializar(entity.rivalJson)
                     Gdx.app.postRunnable { onDone(true) }
                 } else {
                     Gdx.app.postRunnable { onDone(false) }
@@ -103,9 +106,7 @@ class AndroidGameSaveManager(
     }
 
     private fun calcularAlumnos(): Int =
-        PropiedadRepository.propiedades.values
-            .filter { it.comprada }
-            .sumOf { it.baseAlumnos * it.nivel }
+        io.moviles.IPN_Tycoon.rival.MercadoAlumnos.alumnosJugador()
 
     private fun EscuelaEntity.toDto() = GameSaveData(
         slot           = slot,
