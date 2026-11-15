@@ -86,26 +86,13 @@ porque los estudiantes dependen de las escuelas ya pagadas. Si añades un sistem
 nuevo, implementa `GameCycleListener`, declara su `resolutionOrder` y el motor lo
 inserta en el lugar correcto. **No llames a tu sistema a mano desde `GameScreen`.**
 
-### Dibujo de edificios y animaciones (desde la 1.4)
+### Rutas de archivos: nunca con `String.format` sin `Locale`
 
-El paquete `rendering/` llegó con el PR #4 (FiniteMusic):
-
-| Clase | Qué hace |
-|---|---|
-| `BuildingRenderer` | Dibuja la textura del edificio y, encima, sus elementos animados |
-| `BuildingAnimationRegistry` | Asocia animaciones a un `id` de edificio. Hoy solo `escom_hitbox` |
-| `BuildingAnimation` | Envoltura de `Animation<TextureRegion>` de libGDX |
-| `AnimatedElement` | Posición, tamaño y recorrido de ida y vuelta de un elemento animado |
-
-`getElements(id, nivel)` devuelve tantos elementos como nivel tenga el edificio:
-ESCOM nivel 2 muestra dos estudiantes caminando. Para animar otro edificio,
-añade su entrada al mapa del registro. Las texturas se cargan la primera vez que
-se dibuja cualquier edificio comprado y se liberan en `dispose()`.
-
-**Rutas de archivos: nunca con `String.format` sin `Locale`.** En árabe, persa y
-otros idiomas, `"%02d".format(1)` da dígitos no latinos, la ruta no existe y la
-app se cierra. Usa `padStart(2, '0')`. Pasó en el PR #4 y se corrigió antes de
-publicar.
+En árabe, persa, maratí, nepalí o bengalí, `"%02d".format(1)` produce dígitos no
+latinos (`٠١` en vez de `01`), la ruta no existe y la app se cierra. Para armar
+nombres de archivo usa `padStart(2, '0')` o `String.format(Locale.ROOT, ...)`.
+Pasó con el código de animaciones del PR #4 (cerrado sin fusionar; su contenido
+volvió en el PR #7): revisa que no se repita al integrar.
 
 ### El estado
 
