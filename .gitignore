@@ -165,9 +165,8 @@ Thumbs.db
 ## git y hay que rotar la credencial.
 ## ─────────────────────────────────────────────────────────────────────
 
-## Almacenes de claves de firma. OJO: la llave de subida de esta app no
-## tiene extensión (se llama solo "Edu_Tycoon"), así que estos patrones
-## NO la atrapan. Guárdala siempre fuera del repo.
+## Almacenes de claves de firma. La de EDU Tycoon no tiene extensión y se
+## cubre más abajo por nombre. Aun así, guarda las llaves fuera del repo.
 *.jks
 *.keystore
 *.p12
@@ -176,6 +175,13 @@ Thumbs.db
 *.pem
 *.key
 *.der
+
+## La llave de subida de EDU Tycoon no tiene extensión: se ignora por nombre.
+## También las carpetas de material de Play, por si alguien las copia aquí.
+Edu_Tycoon
+Edu_Tycoon.*
+EduTycoon PlayStore/
+Apps Google Play Store/
 
 ## Credenciales de firma y de servicios
 keystore.properties

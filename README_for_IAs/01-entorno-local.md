@@ -143,9 +143,27 @@ Todo lo importante del proyecto que **no** vive en el repositorio está aquí:
 C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\
 ```
 
-Contiene la llave de subida (`Edu_Tycoon`, sin extensión) y material sensible
-adicional. Nada de esa carpeta debe copiarse al repo ni a un artefacto ni a un
-chat.
+Nada de esa carpeta debe copiarse al repo ni a un artefacto ni a un chat.
+
+| Contenido | Qué es |
+|---|---|
+| `Edu_Tycoon` | **La llave de subida.** Sin extensión |
+| un archivo `.txt` | Material sensible. **No lo abras ni lo leas** |
+| `PROMPT_01_CONTINUAR_EDUTYCOON_1.4.txt` | Prompt de traspaso para retomar la publicación de la 1.4 |
+| `capturas\` | Evidencias de prueba numeradas, con índice en `capturas.md` |
+| `logs\` | Logs de compilación |
+| `artefactos\` | Reservada para el AAB firmado y su verificación |
+
+**Historial de ubicaciones.** En agosto de 2026 la carpeta estaba en
+`C:\Users\gabri\Downloads\EduTycoon PlayStore\`; en noviembre Gabriel la movió a
+`Downloads\Apps Google Play Store\`. Si una herramienta o un documento viejo
+apunta a la ruta anterior, está desactualizado. Si la llave no aparece en la ruta
+actual, **pregunta a Gabriel antes de buscarla por el disco.**
+
+La carpeta padre `Apps Google Play Store\` también guarda material de **otras
+apps**: `APP BitBattles PlayStore\` (con `bitbattles.jks`) y `llave_pow.jks` de
+Politécnico Open World. **Ninguna de esas llaves sirve para EDU Tycoon**: cada app
+tiene la suya y Play rechaza un AAB firmado con otra.
 
 La llave es un almacén **PKCS12** (empieza con `30 82`), 2628 bytes, alias `KEY0`.
 Es la llave de subida real de la app publicada — verificado comparando su huella
@@ -164,8 +182,10 @@ seguir. No la pidas, no la leas, no la escribas.**
    que la gente vacía sin mirar. Un borrado accidental sin respaldo significa que
    la app **nunca más se puede actualizar**: Play rechaza cualquier AAB firmado
    con otra llave.
-3. **La llave no tiene extensión**, así que los patrones `*.jks` del `.gitignore`
-   no la atrapan si alguna vez acaba dentro del repo.
+3. **La llave no tiene extensión**, así que `*.jks` no la atraparía. Desde
+   noviembre de 2026 el `.gitignore` la cubre por nombre (`Edu_Tycoon`) y también
+   ignora las carpetas `EduTycoon PlayStore/` y `Apps Google Play Store/` si
+   alguien las copia dentro del repo. Aun así, guárdala siempre fuera del repo.
 
 Respaldo recomendado: una copia cifrada fuera de este equipo.
 
