@@ -85,13 +85,22 @@ nota `D:\Android\avd\LEEME_MOVIMIENTO_AVD.md` documenta el traslado.
 | `FiveNightsESCOM_16KB`, `FiveNightsESCOM_Test` | Proyecto Five Nights. No usar |
 | `HolaMundo_Phone`, `Medium_Phone` | Genéricos |
 
-`EduTycoon_API36_16KB` tiene `disk.dataPartition.path=<temp>`: **cada arranque es
-un dispositivo limpio**, sin la app ni partidas de la sesión anterior. Es a
-propósito, para probar como un usuario que instala por primera vez. Arranque:
+**Los datos del emulador persisten entre arranques** (`userdata-qemu.img.qcow2`
+en la carpeta del AVD), aunque su `config.ini` diga
+`disk.dataPartition.path=<temp>`: esa opción no lo limpia. Para empezar como un
+usuario que instala por primera vez, arranca con `-wipe-data`:
 
 ```bash
-D:/Android/Sdk/emulator/emulator.exe -avd EduTycoon_API36_16KB
+D:/Android/Sdk/emulator/emulator.exe -avd EduTycoon_API36_16KB -wipe-data
 ```
+
+**Si hay más de un emulador abierto, fija el dispositivo.** Los puertos se asignan
+por orden de arranque (`emulator-5554`, `emulator-5556`...), así que no supongas
+cuál es el tuyo: compruébalo con `adb -s <serie> emu avd name`. Y antes de correr
+`connectedAndroidTest`, exporta `ANDROID_SERIAL=<serie>`, porque Gradle ejecuta
+los tests **en todos los dispositivos conectados**. El 15 nov 2026 se ejecutaron
+por error en el emulador de Five Nights; Gradle desinstaló la app al terminar y
+no quedó nada, pero no debe repetirse.
 
 Sirve para comprobar en ejecución el requisito de 16 KB: si las nativas no
 estuvieran alineadas, la app no arrancaría en este emulador.
