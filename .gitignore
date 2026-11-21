@@ -183,6 +183,13 @@ Edu_Tycoon.*
 EduTycoon PlayStore/
 Apps Google Play Store/
 
+## Notas privadas de migración y llaves de adb, por si se copian aquí al
+## mudarse de PC. Lo privado vive fuera del repo.
+*_PRIVADO.*
+MIGRACION_PC_PRIVADO*
+adbkey
+adbkey.pub
+
 ## Credenciales de firma y de servicios
 keystore.properties
 signing.properties

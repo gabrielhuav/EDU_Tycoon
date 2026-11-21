@@ -33,6 +33,7 @@ Ver [01-entorno-local.md](01-entorno-local.md).
 | [04-publicacion-play.md](04-publicacion-play.md) | Llave de firma, historial de versiones, cómo se hace un release |
 | [05-acceso-a-produccion.md](05-acceso-a-produccion.md) | Las 9 respuestas enviadas a Google, con fecha, y qué hacer si rechazan |
 | [06-guia-para-desarrolladores.md](06-guia-para-desarrolladores.md) | **Empieza aquí si eres nuevo.** Arquitectura, dónde tocar cada cosa, trampas |
+| [07-migracion-a-otra-pc.md](07-migracion-a-otra-pc.md) | **Si estás en una PC nueva, empieza aquí.** Qué copiar, qué instalar, cómo verificar |
 | [tools/](tools/) | Scripts de verificación de AAB y de alineación de páginas de 16 KB |
 
 ## Reglas de trabajo con este repo
