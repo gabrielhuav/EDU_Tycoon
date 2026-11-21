@@ -75,21 +75,26 @@ class BuildingInfoWindow(
                 }.cell(padBottom = 2f)
                 row()
 
-                val ingresoCiclo = data.baseAlumnos * data.nivel * MercadoAlumnos.INGRESO_POR_ALUMNO
+                // Con el mismo factor de mercado que aplica EconomyEngine.
+                val ingresoCiclo = MercadoAlumnos.ingresoEdificio(data.baseAlumnos, data.nivel)
                 label("Ingreso/ciclo: \$${fmt(ingresoCiclo)}") {
                     color = Color.GREEN
                 }
                 row()
 
                 if (data.nivel < data.mejoraMax) {
-                    val ingresoSiguiente = data.baseAlumnos * (data.nivel + 1) * MercadoAlumnos.INGRESO_POR_ALUMNO
+                    val ingresoSiguiente = MercadoAlumnos.ingresoEdificio(
+                        data.baseAlumnos, data.nivel + 1, poderExtra = data.baseAlumnos.toLong()
+                    )
                     label("Nivel ${data.nivel + 1}: \$${fmt(ingresoSiguiente)}/ciclo") {
                         color = Color.LIGHT_GRAY
                     }
                     row()
                 }
             } else {
-                val ingresoNivel1 = data.baseAlumnos * 1 * MercadoAlumnos.INGRESO_POR_ALUMNO
+                val ingresoNivel1 = MercadoAlumnos.ingresoEdificio(
+                    data.baseAlumnos, 1, poderExtra = data.baseAlumnos.toLong()
+                )
                 label("Ingreso al comprar: \$${fmt(ingresoNivel1)}/ciclo") {
                     color = Color.GREEN
                 }

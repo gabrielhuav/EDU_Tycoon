@@ -65,6 +65,16 @@ object MercadoAlumnos {
     fun ingresoJugador(): Long =
         (ingresoBaseJugador() * factorAtraccion(cuotaJugador())).roundToLong()
 
+    /**
+     * Ingreso por ciclo de un solo edificio del jugador, con el factor de atraccion
+     * que tendria si su poder creciera en [poderExtra]: 0 para el estado actual y
+     * baseAlumnos para mostrar lo que dara al comprarlo o subirlo un nivel.
+     */
+    fun ingresoEdificio(baseAlumnos: Int, nivel: Int, poderExtra: Long = 0L): Long {
+        val factor = factorAtraccion(cuota(poderJugador() + poderExtra, poderRival()))
+        return (baseAlumnos.toLong() * nivel * INGRESO_POR_ALUMNO * factor).roundToLong()
+    }
+
     /** Ingreso por ciclo del rival con su factor (1 - cuotaJugador). */
     fun ingresoRival(): Long {
         val base = RivalState.edificios.entries.sumOf { (id, nivel) ->

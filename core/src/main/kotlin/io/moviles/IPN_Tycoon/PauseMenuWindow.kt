@@ -87,7 +87,7 @@ class StatsWindow : VisWindow("Estadísticas") {
             label("${st.edificios} comprados").cell(padBottom = 8f)
             row()
 
-            label("Alumnos/ciclo:") { color = Color.GREEN }.cell(padRight = 10f, padBottom = 8f)
+            label("Alumnos:") { color = Color.GREEN }.cell(padRight = 10f, padBottom = 8f)
             label("${st.alumnos}").cell(padBottom = 8f)
             row()
 

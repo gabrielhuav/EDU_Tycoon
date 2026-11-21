@@ -63,6 +63,23 @@ class MercadoAlumnosTest {
     }
 
     @Test
+    fun `ingresoEdificio applies the same factor as the economy`() {
+        val escom = PropiedadRepository.getPropiedad("escom_hitbox")!!.apply { comprada = true; nivel = 1 }
+        RivalState.edificios["Mac_and_cheese"] = 1 // 50
+        // Un solo edificio: su ingreso es el ingreso total del jugador.
+        assertEquals(MercadoAlumnos.ingresoJugador(), MercadoAlumnos.ingresoEdificio(escom.baseAlumnos, 1))
+    }
+
+    @Test
+    fun `ingresoEdificio previews the factor after buying`() {
+        RivalState.edificios["Mac_and_cheese"] = 1 // 50
+        val escom = PropiedadRepository.getPropiedad("escom_hitbox")!!
+        val previsto = MercadoAlumnos.ingresoEdificio(escom.baseAlumnos, 1, poderExtra = escom.baseAlumnos.toLong())
+        escom.apply { comprada = true; nivel = 1 }
+        assertEquals(MercadoAlumnos.ingresoJugador(), previsto)
+    }
+
+    @Test
     fun `nothing owned yields zero students and income`() {
         assertEquals(0, MercadoAlumnos.alumnosJugador())
         assertEquals(0L, MercadoAlumnos.ingresoJugador())
