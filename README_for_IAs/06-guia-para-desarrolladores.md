@@ -9,9 +9,9 @@ corrige este archivo.
 ## 1. Levantar el proyecto
 
 **Clónalo en una ruta sin acentos ni caracteres raros.** El Android Gradle Plugin
-falla si la ruta los tiene, y es un error confuso que parece otra cosa. En esta
-máquina el proyecto vive en `C:\Users\gabri\AndroidStudioProjects\EDU_Tycoon`
-justamente por eso.
+falla si la ruta los tiene, y es un error confuso que parece otra cosa. Los
+espacios sí funcionan: en la PC de Gabriel el proyecto vive en
+`C:\Users\gabri\Documents\GitHub Desktop\EDU_Tycoon`.
 
 Necesitas JDK 17 o más nuevo (aquí hay Corretto 21), Android Studio, y la
 plataforma **SDK 36** instalada. Detalles en [01-entorno-local.md](01-entorno-local.md).

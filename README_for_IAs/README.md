@@ -3,7 +3,7 @@
 Esta carpeta existe para que una IA que abra este repo por primera vez pueda
 trabajar sin volver a descubrir todo desde cero. Léela antes de tocar nada.
 
-Última actualización: **20 de agosto de 2026**.
+Última actualización: **21 de noviembre de 2026** (migración a la PC de escritorio).
 
 ## Qué es esto
 
@@ -14,20 +14,25 @@ IPN. **Acceso a producción concedido el 19 ago 2026.**
 ## Dónde está cada cosa
 
 El código está en este repositorio. **Lo que no está en el repositorio, y sin lo
-cual no se puede publicar, vive aquí:**
+cual no se puede publicar, es la llave de subida.** Sin ella la app no se puede
+actualizar nunca más.
+
+Desde el 21 nov 2026 se trabaja en una PC de escritorio, donde la llave **aún no
+está copiada**; su destino recomendado es
+`C:\Users\gabri\.android\keystores\edutycoon-upload.p12`. Mientras tanto sigue en
+la laptop vieja, en:
 
 ```
 C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\
 ```
 
-Ahí está la llave de subida. Sin ella la app no se puede actualizar nunca más.
 Ver [01-entorno-local.md](01-entorno-local.md).
 
 ## Índice
 
 | Archivo | Qué contiene |
 |---|---|
-| [01-entorno-local.md](01-entorno-local.md) | Rutas de esta laptop, herramientas instaladas, versiones, dónde está la llave |
+| [01-entorno-local.md](01-entorno-local.md) | Rutas de la PC de escritorio y de la laptop vieja, herramientas instaladas, versiones, dónde está la llave |
 | [02-proyecto.md](02-proyecto.md) | Estructura de módulos, versiones del build, comandos útiles |
 | [03-migracion-android-16.md](03-migracion-android-16.md) | Registro completo de la migración a API 36 (agosto 2026) |
 | [04-publicacion-play.md](04-publicacion-play.md) | Llave de firma, historial de versiones, cómo se hace un release |
@@ -51,6 +56,14 @@ Ver [01-entorno-local.md](01-entorno-local.md).
 4. **Verifica, no supongas.** Casi todo lo que se dio por sentado al empezar la
    migración resultó falso (ver [03](03-migracion-android-16.md)). Las
    herramientas de `tools/` existen justo para eso.
+5. **Los PRs de los alumnos se unen uno por uno, cada uno desde su propia página
+   y con "Create a merge commit"**, para que el PR quede como unido y sus commits
+   lleguen a `main` con su autor. Las correcciones van como commits aparte en la
+   rama del PR (si permite edición por maintainers) o en un PR propio de Gabriel.
+   No reescribas sus commits con rebase o cherry-pick, ni los juntes en una rama
+   de integración. Unir con squash solo si Gabriel lo decide. Ojo: este repo es
+   fork de `EmmanuelJuarez14/EDU_Tycoon`, y GitHub no cuenta en el perfil de nadie
+   los commits ni los PRs de un fork mientras siga en esa red de forks.
 
 ## Estado actual
 

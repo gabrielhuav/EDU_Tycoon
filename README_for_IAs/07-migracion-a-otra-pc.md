@@ -1,11 +1,12 @@
 # Migración a otra PC
 
 Para la IA que abre este repositorio en la **PC nueva**. Léelo completo antes de
-actuar. Las rutas de [01-entorno-local.md](01-entorno-local.md) son de la
-**laptop vieja** (Windows, usuario `gabri`) y no existen en la nueva hasta que
-las verifiques y actualices.
+actuar. Desde el 21 nov 2026, [01-entorno-local.md](01-entorno-local.md) describe
+la PC de escritorio; las rutas de la **laptop vieja** están en la tabla de abajo y
+al final de 01.
 
-Preparado el 21 de noviembre de 2026.
+Preparado el 21 de noviembre de 2026. **La migración a la PC de escritorio ya se
+hizo ese mismo día, salvo la llave:** ver la sección 7.
 
 ## 1. Lo que NO viaja con `git clone`
 
@@ -90,6 +91,11 @@ Esperado: `targetSdkVersion 36`, `12 de 12 librerias cumplen 16 KB` y
    ```bash
    avdmanager create avd -n EduTycoon_API36_16KB -k "system-images;android-36;google_apis_playstore_ps16k;x86_64" -d pixel_5
    ```
+   Si falta la imagen, instálala con el Android CLI, porque `sdkmanager` está
+   obsoleto desde cmdline-tools 23.0 (pesa 1.8 GB de descarga):
+   ```bash
+   android sdk install system-images/android-36/google_apis_playstore_ps16k/x86_64
+   ```
 4. **Actualiza [01-entorno-local.md](01-entorno-local.md)** con las rutas reales de
    la PC nueva, y la ubicación nueva de la llave en
    [04-publicacion-play.md](04-publicacion-play.md).
@@ -120,3 +126,23 @@ Esperado: `targetSdkVersion 36`, `12 de 12 librerias cumplen 16 KB` y
 - Las contraseñas las escribe Gabriel. No abras archivos de credenciales.
 - Antes de `connectedAndroidTest` con varios emuladores abiertos, fija
   `ANDROID_SERIAL`.
+
+## 7. Estado de la migración a la PC de escritorio (21 nov 2026)
+
+- [x] Clon en `C:\Users\gabri\Documents\GitHub Desktop\EDU_Tycoon`: ruta ASCII,
+  y el espacio no le estorba a Gradle. `upstream` ya estaba agregado.
+- [x] Herramientas verificadas; rutas y versiones en
+  [01-entorno-local.md](01-entorno-local.md).
+- [x] `:android:bundleRelease` y `checkaab.py`: `targetSdkVersion 36`,
+  `12 de 12 librerias cumplen 16 KB`, `SIN FIRMAR`.
+- [x] Emulador `EduTycoon_API36_16KB` creado; `getconf PAGE_SIZE` da `16384`.
+- [x] PR #8 en esa PC: `:core:test` 48/48 y `connectedAndroidTest` 5/5 en el
+  emulador de 16 KB.
+- [x] GitHub: `viewerPermission` es `ADMIN`. `main` está protegida: PR con 1
+  aprobación y revisión de code owners, sin force-push ni borrado, y los admins
+  sin esas restricciones (`enforce_admins` desactivado). Gabriel es el único
+  colaborador, así que solo cuenta su aprobación. `.github/CODEOWNERS` llega a
+  `main` con el PR #8.
+- [ ] **La llave:** Gabriel la copia por USB al final de la integración de los
+  PRs, verifica la huella (sección 4) y se actualiza su ruta en
+  [04-publicacion-play.md](04-publicacion-play.md).
