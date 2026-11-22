@@ -1,5 +1,6 @@
 package io.moviles.IPN_Tycoon.engine
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.PropiedadRepository
 import io.moviles.IPN_Tycoon.rival.RivalAccion
@@ -18,6 +19,7 @@ class RivalEngineTest {
         GameState.reset()
         PropiedadRepository.resetProgress()
         RivalState.reset()
+        Configuracion.rivalActivo = true
     }
 
     @Test

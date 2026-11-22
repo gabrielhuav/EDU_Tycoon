@@ -1,5 +1,6 @@
 package io.moviles.IPN_Tycoon.rival
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.PropiedadRepository
 import org.junit.Assert.assertEquals
@@ -16,6 +17,7 @@ class RivalAgentTest {
         GameState.reset()
         PropiedadRepository.resetProgress()
         RivalState.reset()
+        Configuracion.rivalActivo = true
     }
 
     private fun simular(seed: Int, ciclos: Int, alCiclo: (List<RivalAccion>) -> Unit = {}): List<RivalAccion> {

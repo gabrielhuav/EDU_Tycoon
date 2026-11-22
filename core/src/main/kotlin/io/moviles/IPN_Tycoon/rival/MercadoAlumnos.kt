@@ -1,5 +1,6 @@
 package io.moviles.IPN_Tycoon.rival
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.PropiedadRepository
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -30,7 +31,7 @@ object MercadoAlumnos {
             .map { it.baseAlumnos to it.nivel }
     )
 
-    fun poderRival(): Long = poder(
+    fun poderRival(): Long = if (!Configuracion.rivalActivo) 0L else poder(
         RivalState.edificios.mapNotNull { (id, nivel) ->
             PropiedadRepository.getPropiedad(id)?.let { it.baseAlumnos to nivel }
         }
@@ -48,12 +49,19 @@ object MercadoAlumnos {
     fun factorAtraccion(cuota: Double): Double =
         (FACTOR_MIN + 0.5 * cuota).coerceIn(FACTOR_MIN, FACTOR_MAX)
 
+    /**
+     * Factor que se aplica al jugador: el de atraccion si el rival esta activo y 1.0
+     * si esta apagado, para que la economia quede como antes de la IA.
+     */
+    fun factorJugador(cuota: Double = cuotaJugador()): Double =
+        if (Configuracion.rivalActivo) factorAtraccion(cuota) else 1.0
+
     /** Alumnos del jugador (con factor de atraccion aplicado). */
     fun alumnosJugador(): Int {
         val base = PropiedadRepository.propiedades.values
             .filter { it.comprada }
             .sumOf { it.baseAlumnos * it.nivel }
-        return (base * factorAtraccion(cuotaJugador())).roundToInt()
+        return (base * factorJugador()).roundToInt()
     }
 
     /** Ingreso por ciclo del jugador sin factor de atraccion. */
@@ -63,7 +71,7 @@ object MercadoAlumnos {
 
     /** Ingreso por ciclo del jugador con factor de atraccion. */
     fun ingresoJugador(): Long =
-        (ingresoBaseJugador() * factorAtraccion(cuotaJugador())).roundToLong()
+        (ingresoBaseJugador() * factorJugador()).roundToLong()
 
     /**
      * Ingreso por ciclo de un solo edificio del jugador, con el factor de atraccion
@@ -71,7 +79,7 @@ object MercadoAlumnos {
      * baseAlumnos para mostrar lo que dara al comprarlo o subirlo un nivel.
      */
     fun ingresoEdificio(baseAlumnos: Int, nivel: Int, poderExtra: Long = 0L): Long {
-        val factor = factorAtraccion(cuota(poderJugador() + poderExtra, poderRival()))
+        val factor = factorJugador(cuota(poderJugador() + poderExtra, poderRival()))
         return (baseAlumnos.toLong() * nivel * INGRESO_POR_ALUMNO * factor).roundToLong()
     }
 

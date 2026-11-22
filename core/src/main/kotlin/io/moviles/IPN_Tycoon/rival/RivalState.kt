@@ -1,5 +1,7 @@
 package io.moviles.IPN_Tycoon.rival
 
+import io.moviles.IPN_Tycoon.Configuracion
+
 /** Estado global del Instituto Rival (mismo patron que GameState). */
 object RivalState {
 
@@ -22,7 +24,11 @@ object RivalState {
         finPartidaMostrado = false
     }
 
-    fun posee(id: String): Boolean = edificios.containsKey(id)
+    /** Con el rival apagado en la configuración, sus edificios no cuentan en el juego. */
+    fun posee(id: String): Boolean = Configuracion.rivalActivo && edificios.containsKey(id)
+
+    /** Nivel del edificio [id] del rival; 0 si no lo tiene o si el rival está apagado. */
+    fun nivel(id: String): Int = if (Configuracion.rivalActivo) edificios[id] ?: 0 else 0
 
     /** Formato: "dinero|ESTADO|victoria|derrota|fin|id:nivel,id:nivel". */
     fun serializar(): String {

@@ -1,5 +1,6 @@
 package io.moviles.IPN_Tycoon.engine
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 import io.moviles.IPN_Tycoon.rival.RivalAccion
 import io.moviles.IPN_Tycoon.rival.RivalAgent
@@ -23,6 +24,8 @@ class RivalEngine(
     override val resolutionOrder = ResolutionOrder.RIVAL
 
     override fun onResolveCycle(cycle: Int) {
+        // Apagado en la configuración: el rival no cobra, no juega y no hay fin de partida.
+        if (!Configuracion.rivalActivo) return
         RivalState.dinero += MercadoAlumnos.ingresoRival()
         val ciclo = cicloActual(cycle)
         agent.tomarTurno(ciclo).forEach(onAccion)

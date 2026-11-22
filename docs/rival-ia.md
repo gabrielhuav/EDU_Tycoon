@@ -12,6 +12,19 @@ Código principal:
 - `core/.../rival/ReglaFinPartida.kt`: victoria y derrota.
 - `core/.../engine/RivalEngine.kt`: integración con el ciclo.
 
+## Activarlo y desactivarlo
+
+El rival está **apagado por defecto**. Se enciende y se apaga en Pausa → «Instituto Rival (IA): ON/OFF». La opción vive en `Configuracion.rivalActivo` (Preferences de libGDX, archivo `edu_tycoon_config`): vale para todas las partidas y se conserva al cerrar la app.
+
+Apagado, el juego queda como antes de la IA:
+
+- `RivalEngine` no cobra, no juega y no evalúa el fin de partida.
+- El factor del jugador es 1.0 (`MercadoAlumnos.factorJugador`) y el poder del rival cuenta como 0.
+- El HUD no muestra la cuota y Estadísticas oculta «Mercado» y «Rival».
+- Los edificios del rival no cuentan (`RivalState.posee` y `RivalState.nivel`), así que el jugador puede comprarlos; al comprarlo, el edificio deja de ser del rival.
+
+Lo que el rival ya tenía se guarda igual en la partida y vuelve a contar si se enciende otra vez.
+
 ## Modelo de mercado
 
 Para cada escuela, el **poder** es la suma de `baseAlumnos * nivel` de sus edificios.

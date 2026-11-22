@@ -14,6 +14,7 @@ class StatsEscuelaTest {
         GameState.reset()
         PropiedadRepository.resetProgress()
         RivalState.reset()
+        Configuracion.rivalActivo = true
     }
 
     private fun comprar(id: String, nivel: Int = 1) {

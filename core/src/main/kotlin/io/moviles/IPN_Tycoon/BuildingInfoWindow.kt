@@ -21,7 +21,7 @@ class BuildingInfoWindow(
         val costo: Long
         val btnTexto: String
         val puedeMejorar: Boolean
-        val nivelRival = if (data.comprada) 0 else (RivalState.edificios[data.id] ?: 0)
+        val nivelRival = if (data.comprada) 0 else RivalState.nivel(data.id)
 
         when {
             nivelRival > 0 -> {
@@ -132,6 +132,9 @@ class BuildingInfoWindow(
                     if (!data.comprada) {
                         data.comprada = true
                         data.nivel    = 1
+                        // Con el rival apagado se puede comprar un edificio suyo: deja de
+                        // ser del rival para que no tenga dos dueños al volver a encenderlo.
+                        RivalState.edificios.remove(data.id)
                     } else {
                         data.nivel++
                     }

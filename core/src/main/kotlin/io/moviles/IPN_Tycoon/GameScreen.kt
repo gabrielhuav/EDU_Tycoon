@@ -213,6 +213,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
     private var rivalShareLabel:  Label? = null
     private var lastCuota:        Int = -1
     private var cachedCuota:      Int = 50
+    private var lastRivalActivo:  Boolean? = null
     private var rivalToastLabel:  Label? = null
     private var rivalToastTable:  Table? = null
     private val rivalTexCache     = HashMap<String, Pair<Int, Texture?>>()
@@ -416,6 +417,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         lastStudents   = -1
         lastReputation = -1
         lastCuota      = -1
+        lastRivalActivo = null
         cycleTimer     = 0f
         hudDirty       = true
 
@@ -687,7 +689,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
             // ====================== EDIFICIOS COMPRADOS ======================
             for (entry in renderEntries) {
                 val p = entry.propiedad
-                val rivalNivel = if (p.comprada) 0 else (RivalState.edificios[p.id] ?: 0)
+                val rivalNivel = if (p.comprada) 0 else RivalState.nivel(p.id)
                 if (!p.comprada && rivalNivel == 0) continue
 
                 val tex = (if (rivalNivel > 0) rivalTexture(p, rivalNivel) else entry.cachedTex) ?: continue
@@ -777,6 +779,15 @@ class GameScreen(game: Main) : BaseScreen(game) {
      * Solo recalcula si hudDirty = true (al comprar/mejorar/fin de ciclo).
      */
     private fun actualizarIndicadoresHUD() {
+        // El rival se puede encender o apagar desde el menú con la partida abierta.
+        val rivalActivo = Configuracion.rivalActivo
+        if (rivalActivo != lastRivalActivo) {
+            lastRivalActivo = rivalActivo
+            lastCuota = -1
+            hudDirty  = true
+            if (!rivalActivo) rivalShareLabel?.setText("")
+        }
+
         if (hudDirty) recalcularHUDCache()
 
         if (GameState.dinero != lastMoney) {
@@ -789,7 +800,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
             alumnosLabel?.setText(formatAlumnos(lastStudents))
         }
 
-        if (cachedCuota != lastCuota) {
+        if (rivalActivo && cachedCuota != lastCuota) {
             lastCuota = cachedCuota
             rivalShareLabel?.setText("Tú $lastCuota% | Rival ${100 - lastCuota}%")
         }

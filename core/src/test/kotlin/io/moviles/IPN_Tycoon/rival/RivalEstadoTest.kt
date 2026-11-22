@@ -1,5 +1,6 @@
 package io.moviles.IPN_Tycoon.rival
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.PropiedadRepository
 import org.junit.Assert.assertEquals
@@ -17,6 +18,7 @@ class RivalEstadoTest {
         GameState.reset()
         PropiedadRepository.resetProgress()
         RivalState.reset()
+        Configuracion.rivalActivo = true
         agent = RivalAgent(Random(1))
     }
 

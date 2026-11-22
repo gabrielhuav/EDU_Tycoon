@@ -49,6 +49,13 @@ class PauseMenuWindow(
             }
             row()
 
+            val rivalBtn = textButton(rivalLabel()) {}
+            rivalBtn.onChange {
+                Configuracion.rivalActivo = !Configuracion.rivalActivo
+                rivalBtn.setText(rivalLabel())
+            }
+            row()
+
             textButton("Menu principal") {
                 onChange {
                     this@PauseMenuWindow.remove()
@@ -63,6 +70,9 @@ class PauseMenuWindow(
 
     private fun audioLabel() =
         if (GameState.musicaActiva) "Audio: ON" else "Audio: OFF"
+
+    private fun rivalLabel() =
+        if (Configuracion.rivalActivo) "Instituto Rival (IA): ON" else "Instituto Rival (IA): OFF"
 
     fun show(stage: Stage) { stage.addActor(this) }
 }
@@ -95,13 +105,15 @@ class StatsWindow : VisWindow("Estadísticas") {
             label("\$${fmt(st.ingresosCiclo)}").cell(padBottom = 8f)
             row()
 
-            label("Mercado:") { color = Color.ORANGE }.cell(padRight = 10f, padBottom = 8f)
-            label("Tú ${st.cuotaJugadorPct}% | Rival ${st.cuotaRivalPct}%").cell(padBottom = 8f)
-            row()
+            if (Configuracion.rivalActivo) {
+                label("Mercado:") { color = Color.ORANGE }.cell(padRight = 10f, padBottom = 8f)
+                label("Tú ${st.cuotaJugadorPct}% | Rival ${st.cuotaRivalPct}%").cell(padBottom = 8f)
+                row()
 
-            label("Rival:") { color = Color.SALMON }.cell(padRight = 10f, padBottom = 8f)
-            label("${st.edificiosRival} edif. | \$${fmt(st.dineroRival)}").cell(padBottom = 8f)
-            row()
+                label("Rival:") { color = Color.SALMON }.cell(padRight = 10f, padBottom = 8f)
+                label("${st.edificiosRival} edif. | \$${fmt(st.dineroRival)}").cell(padBottom = 8f)
+                row()
+            }
 
             label("Ciclos:") { color = Color.LIGHT_GRAY }.cell(padRight = 10f, padBottom = 8f)
             label("${GameState.ciclosJugados}").cell(padBottom = 8f)
