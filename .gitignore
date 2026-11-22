@@ -165,9 +165,8 @@ Thumbs.db
 ## git y hay que rotar la credencial.
 ## ─────────────────────────────────────────────────────────────────────
 
-## Almacenes de claves de firma. OJO: la llave de subida de esta app no
-## tiene extensión (se llama solo "Edu_Tycoon"), así que estos patrones
-## NO la atrapan. Guárdala siempre fuera del repo.
+## Almacenes de claves de firma. La de EDU Tycoon no tiene extensión y se
+## cubre más abajo por nombre. Aun así, guarda las llaves fuera del repo.
 *.jks
 *.keystore
 *.p12
@@ -176,6 +175,20 @@ Thumbs.db
 *.pem
 *.key
 *.der
+
+## La llave de subida de EDU Tycoon no tiene extensión: se ignora por nombre.
+## También las carpetas de material de Play, por si alguien las copia aquí.
+Edu_Tycoon
+Edu_Tycoon.*
+EduTycoon PlayStore/
+Apps Google Play Store/
+
+## Notas privadas de migración y llaves de adb, por si se copian aquí al
+## mudarse de PC. Lo privado vive fuera del repo.
+*_PRIVADO.*
+MIGRACION_PC_PRIVADO*
+adbkey
+adbkey.pub
 
 ## Credenciales de firma y de servicios
 keystore.properties
@@ -215,3 +228,11 @@ mapping.txt
 ## You could also add that configuration to the text in nativeimage.gradle .
 ## You should delete or comment out the next line if you have configuration in a different resource-config.json .
 **/resource-config.json
+
+## Capturas y otras imágenes de QA: se adjuntan en el PR, no en el repo.
+docs/**/*.png
+docs/**/*.jpg
+docs/**/*.jpeg
+docs/**/*.gif
+docs/**/*.webp
+docs/**/*.mp4

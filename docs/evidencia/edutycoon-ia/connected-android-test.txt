@@ -1,0 +1,4 @@
+connectedAndroidTest — SM-G998U (Android 14), 0c1b3f4+wip, 2026-11-08
+<testsuite name="io.moviles.IPN_Tycoon.android.database.MigracionRivalTest" tests="1" failures="0" errors="0" skipped="0" time="0.104"
+<testsuite name="io.moviles.IPN_Tycoon.database.DatabaseTest" tests="4" failures="0" errors="0" skipped="0" time="0.022"
+BUILD SUCCESSFUL (exit 0)

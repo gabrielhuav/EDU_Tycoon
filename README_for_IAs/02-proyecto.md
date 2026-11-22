@@ -1,5 +1,9 @@
 # El proyecto
 
+> Si es tu primer día en este código, lee antes
+> [06-guia-para-desarrolladores.md](06-guia-para-desarrolladores.md). Este archivo
+> es la referencia de versiones y comandos; aquél explica cómo funciona el juego.
+
 ## Estructura
 
 Proyecto libGDX multi-módulo con Gradle en **Groovy** (`build.gradle`, no `.kts`).
@@ -31,11 +35,11 @@ Ojo con dos cosas que no son como en un proyecto Android típico:
 - **El manifest está en `android/AndroidManifest.xml`**, en la raíz del módulo. Lo
   declara `sourceSets.main.manifest.srcFile`.
 
-## Versiones (15 ago 2026)
+## Versiones (verificadas el 21 nov 2026)
 
 | | Versión | Dónde se declara |
 |---|---|---|
-| AGP | 8.13.2 | `build.gradle` raíz |
+| AGP | 9.3.1 | `build.gradle` raíz |
 | Gradle | 9.5.0 | `gradle/wrapper/gradle-wrapper.properties` |
 | Kotlin | 2.2.10 | `gradle.properties` → `kotlinVersion` |
 | libGDX | 1.14.0 | `gradle.properties` → `gdxVersion` |
@@ -46,7 +50,8 @@ Ojo con dos cosas que no son como en un proyecto Android típico:
 | versionName | 1.3.1 | `android/build.gradle` |
 
 Otras librerías relevantes: Room `2.7.0-alpha13` (con **kapt**, no KSP),
-Lifecycle `2.8.7`, VisUI `1.5.5`, libKTX `1.13.1-rc1`, Ashley, Box2D, FreeType.
+Lifecycle `2.8.7`, VisUI `1.5.5`, libKTX `1.13.1-rc1`, gdx-ai `1.8.2` (la usa el
+Instituto Rival), Ashley, Box2D, FreeType.
 
 ## Manifest
 
@@ -101,6 +106,11 @@ Notas importantes:
   `-Dorg.gradle.logging.level=lifecycle --warning-mode=all`.
 - `org.gradle.daemon=false` y `-Xmx1G`. Un `bundleRelease` completo tarda varios
   minutos por el kapt de Room y R8.
+- **Avisos de AGP 9 que serán errores en AGP 10.** `gradle.properties` fija ocho
+  opciones `android.*` obsoletas (entre ellas `android.newDsl=false` y
+  `android.builtInKotlin=false`), y el build usa la API vieja
+  `applicationVariants`. Hoy no bloquean, pero hay que resolverlas antes de subir
+  a AGP 10.
 
 ## Manejo del botón Atrás
 

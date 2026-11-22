@@ -18,5 +18,7 @@ data class EscuelaEntity(
     val edificiosJson: String  = "",
     val ciclosJugados: Int     = 0,
     val alumnosTotales: Int    = 0,
-    val fechaGuardado: Long    = System.currentTimeMillis()
+    val fechaGuardado: Long    = System.currentTimeMillis(),
+    /** Estado serializado del Instituto Rival (ver RivalState.serializar). Vacio = partida sin rival. */
+    val rivalJson: String      = ""
 )
