@@ -82,6 +82,10 @@ produce un AAB **sin firmar**. La firma es manual.
    versionCode, versionName, targetSdk y la huella de la firma.
 5. **Subir** en Play Console → Prueba cerrada → Alpha → Crear versión.
 
+Queda pendiente automatizarlo con un workflow de GitHub Actions como el de POW,
+que firme el AAB al unir un PR a `main` y lo deje como artefacto si el PR lleva
+la etiqueta `manual-play-upload`. Ver [08](08-workflow-release-pendiente.md).
+
 ### Regenerar el zip de símbolos nativos (opcional)
 
 Silencia la advertencia de Play sobre símbolos de depuración. Ver

@@ -39,6 +39,7 @@ Ver [01-entorno-local.md](01-entorno-local.md).
 | [05-acceso-a-produccion.md](05-acceso-a-produccion.md) | Las 9 respuestas enviadas a Google, con fecha, y qué hacer si rechazan |
 | [06-guia-para-desarrolladores.md](06-guia-para-desarrolladores.md) | **Empieza aquí si eres nuevo.** Arquitectura, dónde tocar cada cosa, trampas |
 | [07-migracion-a-otra-pc.md](07-migracion-a-otra-pc.md) | **Si estás en una PC nueva, empieza aquí.** Qué copiar, qué instalar, cómo verificar |
+| [08-workflow-release-pendiente.md](08-workflow-release-pendiente.md) | **Pendiente.** Workflow de release con la etiqueta `manual-play-upload`, como en POW |
 | [tools/](tools/) | Scripts de verificación de AAB y de alineación de páginas de 16 KB |
 
 ## Reglas de trabajo con este repo
@@ -64,6 +65,10 @@ Ver [01-entorno-local.md](01-entorno-local.md).
    de integración. Unir con squash solo si Gabriel lo decide. Ojo: este repo es
    fork de `EmmanuelJuarez14/EDU_Tycoon`, y GitHub no cuenta en el perfil de nadie
    los commits ni los PRs de un fork mientras siga en esa red de forks.
+6. **En el repo no van capturas ni imágenes que no use el juego.** La evidencia
+   de QA se adjunta en el PR; en `docs/evidencia/` solo quedan registros de
+   texto. El `.gitignore` ignora las imágenes de `docs/`. Las capturas del PR #8
+   se retiraron y siguen visibles en el commit `f41e313`.
 
 ## Estado actual
 
@@ -76,7 +81,11 @@ cuatro días después de enviar la solicitud.
 
 ## Lo que quedó pendiente
 
-Ninguna de las dos bloquea, pero conviene no perderlas de vista:
+Ninguna bloquea, pero conviene no perderlas de vista:
+
+- **Workflow de release**: la etiqueta `manual-play-upload` existe, pero todavía
+  no hay workflow que genere el AAB firmado como en POW. Ver
+  [08](08-workflow-release-pendiente.md).
 
 - **`useLegacyPackaging`**: el bundle sale con `extractNativeLibs="true"`. Cumple
   16 KB igualmente, pero no es la configuración que Google documenta como

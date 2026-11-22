@@ -53,7 +53,8 @@ queda activo y al pulsarlo muestra «¡Saldo insuficiente!» sin cobrar.
 
 - `./gradlew :core:test` → **48/48** en verde: 42 de las clases de `rival/` y
   `engine/`, 2 de `PipelineCompletoTest` (Economy + Students + Rival en un mismo
-  motor) y 4 de `StatsEscuelaTest`.
+  motor) y 4 de `StatsEscuelaTest`. Las correcciones posteriores sumaron 2
+  pruebas de `MercadoAlumnos.ingresoEdificio` (50/50).
 - `./gradlew :android:assembleDebugAndroidTest` → compila en esta rama.
 - `./gradlew :android:connectedAndroidTest` en el celular físico de Javier →
   **5/5**: `DatabaseTest` (4) y `MigracionRivalTest` (1, cubre `MIGRATION_4_5`
@@ -62,6 +63,11 @@ queda activo y al pulsarlo muestra «¡Saldo insuficiente!» sin cobrar.
   [`connected-android-test.txt`](evidencia/edutycoon-ia/connected-android-test.txt).
 
 ## Pruebas manuales
+
+Las capturas (`.png`) ya no están en el repositorio: se conservan en el commit
+[`f41e313`](https://github.com/gabrielhuav/EDU_Tycoon/tree/f41e313/docs/evidencia/edutycoon-ia).
+Los registros de texto (`.txt`) siguen en
+[`docs/evidencia/edutycoon-ia/`](evidencia/edutycoon-ia/).
 
 | ID | Caso | Pasos | Resultado esperado | Resultado real | Estado | Evidencia |
 |---|---|---|---|---|---|---|
@@ -79,8 +85,8 @@ Ficha de QA de Javier (J-CP1 a J-CP4):
 [`pruebas-javier.md`](evidencia/edutycoon-ia/pruebas-javier.md).
 
 Evidencia individual de ejecución:
-[`gonzalez-jesus-edutycoon-ia.png`](evidencia/edutycoon-ia/gonzalez-jesus-edutycoon-ia.png) y
-[`gamez-javier-edutycoon-ia.png`](evidencia/edutycoon-ia/gamez-javier-edutycoon-ia.png).
+[`gonzalez-jesus-edutycoon-ia.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/gonzalez-jesus-edutycoon-ia.png) y
+[`gamez-javier-edutycoon-ia.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/gamez-javier-edutycoon-ia.png).
 
 ## Observaciones
 
@@ -92,8 +98,9 @@ Evidencia individual de ejecución:
 - Hallazgos preexistentes, no causados por esta característica: el tamaño de
   texto del sistema se ignora (CP-R5) y cambiar `font_scale` con el juego
   abierto recrea la actividad y provoca `VisUI cannot be loaded twice` en
-  `Main.kt` (J-CP4 de Javier). `DatabaseProvider` conserva
-  `fallbackToDestructiveMigration()` para saltos de versión distintos de 4→5.
+  `Main.kt` (J-CP4 de Javier). Después de esta QA, `DatabaseProvider` dejó de
+  usar `fallbackToDestructiveMigration()`: solo recrea la base desde las
+  versiones 1 a 3, y de la 4 en adelante exige una migración.
 
 ## Seguimiento en el fork del equipo
 

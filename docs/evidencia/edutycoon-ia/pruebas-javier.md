@@ -28,7 +28,7 @@
 - **Real:** HUD `Alumnos: 690`, `Tú 80% | Rival 20%`; Estadísticas: `Alumnos/ciclo 690`,
   `Ingresos/ciclo $69K` (600 × 100 × 1.15), `Mercado: Tú 80% | Rival 20%`, `Rival: 2 edif. | $243K`,
   etiqueta por ciclo visible.
-- **Estado:** ✅ Pasa. Captura: [`qa-javier-cp1.png`](qa-javier-cp1.png).
+- **Estado:** ✅ Pasa. Captura: [`qa-javier-cp1.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp1.png).
 
 ### J-CP2 — Regresión: comprar, mejorar y propiedad del rival
 
@@ -38,9 +38,9 @@
 - **Esperado:** el HUD se actualiza tras cada acción; la Cafetería no ofrece compra.
 - **Real:** tras comprar, `$200.0K` y `690` alumnos; tras mejorar, `1.4K` alumnos y `Tú 83% | Rival 17%`;
   la Cafetería mostró «Propiedad del Instituto Rival (Nivel 2)» sin botón.
-- **Estado:** ✅ Pasa. Capturas: [`qa-javier-cp2a-compra.png`](qa-javier-cp2a-compra.png),
-  [`qa-javier-cp2b-mejora.png`](qa-javier-cp2b-mejora.png),
-  [`qa-javier-cp2c-propiedad-rival.png`](qa-javier-cp2c-propiedad-rival.png).
+- **Estado:** ✅ Pasa. Capturas: [`qa-javier-cp2a-compra.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp2a-compra.png),
+  [`qa-javier-cp2b-mejora.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp2b-mejora.png),
+  [`qa-javier-cp2c-propiedad-rival.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp2c-propiedad-rival.png).
 
 ### J-CP3 — Navegación y estado: guardar, salir y recargar
 
@@ -50,8 +50,8 @@
 - **Real:** «Guardado correctamente» con `$354.5K`, `1.4K` y `Tú 80% | Rival 20%`; el slot mostró
   «Javier $354K Ciclos: 9»; al cargar, el HUD volvió idéntico y la Cafetería roja del rival siguió en el mapa.
   Estadísticas tras recargar: `Rival: 2 edif.`, `Alumnos/ciclo 1380`, `Ingresos/ciclo $138K`.
-- **Estado:** ✅ Pasa. Capturas: [`qa-javier-cp3a-guardado.png`](qa-javier-cp3a-guardado.png),
-  [`qa-javier-cp3b-slot.png`](qa-javier-cp3b-slot.png), [`qa-javier-cp3c-cargado.png`](qa-javier-cp3c-cargado.png).
+- **Estado:** ✅ Pasa. Capturas: [`qa-javier-cp3a-guardado.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp3a-guardado.png),
+  [`qa-javier-cp3b-slot.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp3b-slot.png), [`qa-javier-cp3c-cargado.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp3c-cargado.png).
 
 ### J-CP4 — Accesibilidad / compatibilidad: texto del sistema ampliado
 
@@ -64,9 +64,9 @@
   en `Main.create` (`Main.kt:12`), porque Android recrea la actividad y `VisUI.load()` se ejecuta de nuevo
   en el mismo proceso. Defecto preexistente, ajeno a esta feature; se documenta en el hilo del PR #10.
 - **Estado:** ❌ Falla (preexistente #5 y defecto nuevo documentado en el PR #10).
-  Captura: [`qa-javier-cp4-font-scale.png`](qa-javier-cp4-font-scale.png).
+  Captura: [`qa-javier-cp4-font-scale.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/qa-javier-cp4-font-scale.png).
 
 ## Imagen individual
 
-[`gamez-javier-edutycoon-ia.png`](gamez-javier-edutycoon-ia.png): la app corriendo en el celular
+[`gamez-javier-edutycoon-ia.png`](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/edutycoon-ia/gamez-javier-edutycoon-ia.png): la app corriendo en el celular
 (ventana scrcpy) y la terminal con `git config user.name`, `user.email`, rama y commits.

@@ -114,17 +114,17 @@ Dispositivo Xiaomi 25062PC34G, Android 16, APK debug `versionName 1.3.1`, 2026-1
 
 | ID | Caso | Resultado | Evidencia |
 |---|---|---|---|
-| CP-R1 | Partida nueva: el HUD muestra "Tú X% \| Rival Y%" y el rival compra tras el periodo de gracia (log: `Compra Edificio2 por 400000`). | PASS | [captura](evidencia/rival-ia/cp1-cp2-hud-cuota-y-edificio-rival.png) |
-| CP-R2 | El edificio del rival se ve en rojo y su ventana dice "Propiedad del Instituto Rival (Nivel 1)" sin botón de compra. | PASS | [mapa](evidencia/rival-ia/cp1-cp2-hud-cuota-y-edificio-rival.png), [ventana](evidencia/rival-ia/cp2-ventana-propiedad-rival.png) |
+| CP-R1 | Partida nueva: el HUD muestra "Tú X% \| Rival Y%" y el rival compra tras el periodo de gracia (log: `Compra Edificio2 por 400000`). | PASS | [captura](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/cp1-cp2-hud-cuota-y-edificio-rival.png) |
+| CP-R2 | El edificio del rival se ve en rojo y su ventana dice "Propiedad del Instituto Rival (Nivel 1)" sin botón de compra. | PASS | [mapa](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/cp1-cp2-hud-cuota-y-edificio-rival.png), [ventana](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/cp2-ventana-propiedad-rival.png) |
 | CP-R3 | Al superar 60 % de cuota el rival pasa a COMPETIR y mejora (log: `AHORRAR -> COMPETIR`, `Mejora Mac_and_cheese a nivel 2`). | PASS | [log](evidencia/rival-ia/qa-rival-logcat-completo.txt) |
 | CP-R4 | Guardar, salir y cargar conserva los edificios del rival (migración 4→5 sin pérdida). | PASS | [log](evidencia/rival-ia/qa-rival-logcat-completo.txt) |
-| CP-R5 | Victoria tras el ciclo 10 con 98 % (log: `Fin de partida: VICTORIA`); "Continuar jugando" cierra el diálogo y no reaparece. | PASS | [dominio](evidencia/rival-ia/cp5-dominio-99-vs-1.png), [diálogo](evidencia/rival-ia/cp5-dialogo-victoria.png), [log](evidencia/rival-ia/qa-rival-logcat-completo.txt) |
+| CP-R5 | Victoria tras el ciclo 10 con 98 % (log: `Fin de partida: VICTORIA`); "Continuar jugando" cierra el diálogo y no reaparece. | PASS | [dominio](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/cp5-dominio-99-vs-1.png), [diálogo](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/cp5-dialogo-victoria.png), [log](evidencia/rival-ia/qa-rival-logcat-completo.txt) |
 
 Nota sobre CP-R5: para acelerarlo se usó una compilación local temporal que iniciaba con 100 M (`DINERO_INICIAL_TEST`). Ese cambio no se incluyó en ningún commit.
 
 ### Defecto encontrado y corregido
 
-Al volver a entrar a `GameScreen` (por ejemplo, tras cargar una partida) la etiqueta de cuota quedaba vacía hasta que cambiaba el valor, porque `lastCuota` conservaba el valor anterior. Se corrigió en el commit `a518a2b`, que reinicia `lastCuota = -1` al configurar los controles. Captura previa a la corrección: [bug-hud-cuota-vacia-antes-del-fix.png](evidencia/rival-ia/bug-hud-cuota-vacia-antes-del-fix.png).
+Al volver a entrar a `GameScreen` (por ejemplo, tras cargar una partida) la etiqueta de cuota quedaba vacía hasta que cambiaba el valor, porque `lastCuota` conservaba el valor anterior. Se corrigió en el commit `a518a2b`, que reinicia `lastCuota = -1` al configurar los controles. Captura previa a la corrección: [bug-hud-cuota-vacia-antes-del-fix.png](https://github.com/gabrielhuav/EDU_Tycoon/blob/f41e313/docs/evidencia/rival-ia/bug-hud-cuota-vacia-antes-del-fix.png).
 
 ### Balance simulado
 
