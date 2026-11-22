@@ -7,10 +7,10 @@ A continuación se presentan las evidencias requeridas para la culminación de l
 * **Liga de la etiqueta parcial-1:** [Release Parcial 1 - EDU Tycoon](https://github.com/JulioCesarCaballero/EDU_Tycoon/releases/tag/parcial-1)
 
 ### Captura del resultado de la integración continua (CI/CD)
-![Integración Continua](evidencia/cicd.png)
+![Integración Continua](https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/cicd.png)
 
 ### Captura de la conversación de revisión
-![Revisión de Código](evidencia/conversacion.png)
+![Revisión de Código](https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/conversacion.png)
 
 ### Captura del historial de commits
-![Historial de Commits](evidencia/historial.png)
+![Historial de Commits](https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/historial.png)

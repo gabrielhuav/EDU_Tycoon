@@ -58,19 +58,19 @@ Se crearon y validaron pruebas automatizadas en `io.moviles.IPN_Tycoon.engine.Bu
 
 | Antes: Sin Burbujas (Generación Pasiva) | Después: Burbujas Interactivas (Recaudación Táctil) |
 | :---: | :---: |
-| <img src="evidencia/entrega-2/captura_antes_de_burbujas_interactivas.jpg" width="340" /><br><sub>**Antes:** Generación pasiva e incierta sin avisos visuales ni sonoros.</sub> | <img src="evidencia/entrega-2/burbujas_interactivas.jpg" width="340" /><br><sub>**Después:** Burbujas doradas flotantes sobre los edificios con ciclo concluido.</sub> |
+| <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/captura_antes_de_burbujas_interactivas.jpg" width="340" /><br><sub>**Antes:** Generación pasiva e incierta sin avisos visuales ni sonoros.</sub> | <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/burbujas_interactivas.jpg" width="340" /><br><sub>**Después:** Burbujas doradas flotantes sobre los edificios con ciclo concluido.</sub> |
 
 ### 2. Transparencia y Tiempos de Ciclo en Ficha de Gestión (CP-E2-03)
 
 | Definición de Tiempo por Ciclo | Tiempo de Ciclo de Ingresos Añadido |
 | :---: | :---: |
-| <img src="evidencia/entrega-2/definicion_de_tiempo_por_ciclo_de_ingreso.jpg" width="340" /><br><sub>Estadísticas de plantel y duración del ciclo de producción (ej. 35s).</sub> | <img src="evidencia/entrega-2/tiempo_de_ciclo_ingresos_anadido.jpg" width="340" /><br><sub>Desglose de ingresos por ciclo y alerta de fondos listos para cobrar.</sub> |
+| <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/definicion_de_tiempo_por_ciclo_de_ingreso.jpg" width="340" /><br><sub>Estadísticas de plantel y duración del ciclo de producción (ej. 35s).</sub> | <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/tiempo_de_ciclo_ingresos_anadido.jpg" width="340" /><br><sub>Desglose de ingresos por ciclo y alerta de fondos listos para cobrar.</sub> |
 
 ### 3. Notificación Emergente, Animación y Acreditación de Saldo (CP-E2-02, CP-E2-05)
 
 | Burbuja Emergente sobre Plantel | Animación Ascendente de Recaudación | Saldo Acreditado en el HUD |
 | :---: | :---: | :---: |
-| <img src="evidencia/entrega-2/burbuja_dinero_emergente.jpg" width="230" /><br><sub>Burbuja dorada emergente sobre el edificio.</sub> | <img src="evidencia/entrega-2/animacion_recoleccion_dinero.jpg" width="230" /><br><sub>Animación flotante del monto (`+$X`) con sonido `coin.wav`.</sub> | <img src="evidencia/entrega-2/saldo_actualizado_dinero_recolectado.jpg" width="230" /><br><sub>Saldo del presupuesto incrementado al instante.</sub> |
+| <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/burbuja_dinero_emergente.jpg" width="230" /><br><sub>Burbuja dorada emergente sobre el edificio.</sub> | <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/animacion_recoleccion_dinero.jpg" width="230" /><br><sub>Animación flotante del monto (`+$X`) con sonido `coin.wav`.</sub> | <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/saldo_actualizado_dinero_recolectado.jpg" width="230" /><br><sub>Saldo del presupuesto incrementado al instante.</sub> |
 
 ---
 

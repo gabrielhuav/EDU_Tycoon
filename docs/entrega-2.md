@@ -75,7 +75,7 @@ Conforme a la sección 1.2 del instrumento de evaluación, se presentan los tres
 
 | Antes: Sin Burbujas (v1.0.0) | Después: Burbujas Interactivas (v1.1.0) |
 | :---: | :---: |
-| <img src="evidencia/entrega-2/captura_antes_de_burbujas_interactivas.jpg" width="340" /><br><sub>Generación pasiva e incierta sin avisos visuales ni sonoros.</sub> | <img src="evidencia/entrega-2/burbujas_interactivas.jpg" width="340" /><br><sub>Burbujas doradas flotantes sobre los planteles con ciclo concluido.</sub> |
+| <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/captura_antes_de_burbujas_interactivas.jpg" width="340" /><br><sub>Generación pasiva e incierta sin avisos visuales ni sonoros.</sub> | <img src="https://github.com/gabrielhuav/EDU_Tycoon/raw/fb0b295/docs/evidencia/entrega-2/burbujas_interactivas.jpg" width="340" /><br><sub>Burbujas doradas flotantes sobre los planteles con ciclo concluido.</sub> |
 
 ### 3.3 Fundamentación Psicológica y de Diseño de Juego (Game Design)
 La transformación de la recaudación pasiva a un bucle de recolección manual activo genera un impacto psicológico sustancial:
