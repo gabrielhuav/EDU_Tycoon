@@ -39,6 +39,8 @@ factorAtraccion = clamp(0.75 + 0.5 * cuota, 0.75, 1.25)
 
 El factor del jugador usa `cuotaJugador`; el del rival usa `1 - cuotaJugador`. Con cuota 0 el factor es 0.75 y con cuota 1 es 1.25. Si el rival no tiene edificios y el jugador sí, la cuota es 1.0 (bonus de monopolio).
 
+Desde la Entrega 2 el jugador no cobra al final de cada ciclo global: cada edificio produce con su propio temporizador y el dinero se recoge tocando su burbuja (`BuildingIncomeManager`). El monto de cada burbuja es `MercadoAlumnos.ingresoEdificio`, con el mismo factor de atracción. El rival sigue cobrando cada ciclo en `RivalEngine`.
+
 | Magnitud | Fórmula |
 |---|---|
 | Alumnos del jugador | `round(Σ baseAlumnos*nivel * factor(cuotaJ))` |
