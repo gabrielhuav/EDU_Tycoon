@@ -6,7 +6,7 @@
 |---|---|
 | Nombre en Play | **EDU Tycoon** |
 | Paquete | `io.moviles.IPN_Tycoon` |
-| Estado | Prueba cerrada (Alpha) activa · Producción inactiva |
+| Estado | Producción con la 1.3.1 (código 5), además de la prueba cerrada (Alpha). Confírmalo en Play Console |
 | Alcance | 18 países o regiones |
 | Cuenta | Gabriel tiene acceso a Play Console |
 
@@ -16,7 +16,8 @@
 
 | | |
 |---|---|
-| Archivo | `C:\Users\gabri\Downloads\EduTycoon PlayStore\Edu_Tycoon` (sin extensión) |
+| Archivo en la PC de escritorio | **Pendiente de copiar** (21 nov 2026). Destino recomendado: `C:\Users\gabri\.android\keystores\edutycoon-upload.p12` |
+| Archivo en la laptop vieja | `C:\Users\gabri\Downloads\Apps Google Play Store\EduTycoon PlayStore\Edu_Tycoon` (sin extensión) |
 | Formato | PKCS12 |
 | Alias | `KEY0` |
 | Propietario | `C=55749, ST=Mexico, L=Tecamac, CN=Kevin Zarco Sosa` |
@@ -33,8 +34,11 @@ Para confirmar que un almacén candidato es el correcto, compara su huella con l
 de arriba (esto pide la contraseña, córrelo tú, no la IA):
 
 ```bash
-keytool -list -v -keystore "C:\Users\gabri\Downloads\EduTycoon PlayStore\Edu_Tycoon" -alias KEY0
+keytool -list -v -keystore "C:\Users\gabri\.android\keystores\edutycoon-upload.p12" -alias KEY0
 ```
+
+Esa es la ruta de la PC de escritorio una vez copiada la llave. En la laptop vieja
+usa la ruta de la tabla de arriba.
 
 Para verificar un AAB **ya firmado** no hace falta contraseña: el certificado
 viaja dentro del bundle. Usa `tools/checkaab.py`.
@@ -51,9 +55,10 @@ contraseña, extrae el certificado del bundle y compáralo. Ver
 | 1.1 | 2 | 13 jun 2026 | — |
 | 1.2 | 3 | 13 jun 2026 | 35 |
 | 1.3 | 4 | 22 jun 2026 | 35 |
-| **1.3.1** | **5** | **14 ago 2026** | **36** |
+| 1.3.1 | 5 | 14 ago 2026 (Alpha), luego Producción | 36 |
 
-**El siguiente release debe usar `versionCode 6` o mayor.**
+**La siguiente versión que se suba debe usar `versionCode 6` o mayor.**
+Confirma siempre el último código en Play Console antes de subir.
 
 Trampa importante: **el repo y Play se desincronizan.** La versión 1.3 (código 4)
 nunca se commiteó — Kevin la construyó en local. Durante la migración, git decía
@@ -76,6 +81,10 @@ produce un AAB **sin firmar**. La firma es manual.
 4. **Verificar el bundle antes de subirlo** con los scripts de `tools/`:
    versionCode, versionName, targetSdk y la huella de la firma.
 5. **Subir** en Play Console → Prueba cerrada → Alpha → Crear versión.
+
+Queda pendiente automatizarlo con un workflow de GitHub Actions como el de POW,
+que firme el AAB al unir un PR a `main` y lo deje como artefacto si el PR lleva
+la etiqueta `manual-play-upload`. Ver [08](08-workflow-release-pendiente.md).
 
 ### Regenerar el zip de símbolos nativos (opcional)
 
@@ -101,7 +110,8 @@ Se sube en Play Console → Explorador de bundles → la versión → Descargas.
 
 ## Acceso a producción
 
-**Solicitud enviada el 15 de agosto de 2026 a las 6:04 p.m. En revisión.**
+**Concedido el 19 de agosto de 2026.** La solicitud se envió el 15 de agosto a
+las 6:04 p.m.
 
 Las nueve respuestas enviadas, la coherencia entre ellas y qué hacer si rechazan
 están en [05-acceso-a-produccion.md](05-acceso-a-produccion.md).

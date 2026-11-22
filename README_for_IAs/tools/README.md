@@ -1,7 +1,8 @@
 # Herramientas de verificación
 
-Scripts sin dependencias externas, escritos para el Python 3.7 que hay en esta
-máquina. Se usan desde la raíz del repo.
+Scripts sin dependencias externas, escritos para Python 3.7, la versión de la
+laptop vieja; en la PC de escritorio corren igual con 3.10. Se usan desde la raíz
+del repo.
 
 Existen porque las herramientas normales no sirven para esto: el manifest dentro
 de un AAB va en protobuf y `aapt2` no lo lee, y `bundletool` no está instalado.

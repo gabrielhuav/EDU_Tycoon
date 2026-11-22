@@ -89,7 +89,7 @@ La transformación de la recaudación pasiva a un bucle de recolección manual a
 ## 4. Matriz de Pruebas de QA y Verificación
 
 La matriz exhaustiva con los **6 casos de prueba reales** exigidos por la rúbrica oficial se encuentra documentada en detalle en:
-📄 [docs/pruebas.md](pruebas.md)
+📄 [docs/pruebas-entrega-2.md](pruebas-entrega-2.md)
 
 * **CP-E2-01:** Instalación inicial por Google Play y ejecución de partida base.
 * **CP-E2-02:** Mecánica de recolección táctil mediante burbuja flotante, animación ascendente y retroalimentación auditiva.

@@ -3,6 +3,7 @@ package io.moviles.IPN_Tycoon.engine
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.Propiedad
 import io.moviles.IPN_Tycoon.PropiedadRepository
+import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 
 /**
  * Gestor del subsistema de ingresos interactivos y ciclos de producción por edificio (Tycoon).
@@ -16,8 +17,6 @@ import io.moviles.IPN_Tycoon.PropiedadRepository
  * ser recolectada manualmente por el jugador mediante una burbuja interactiva táctil.
  */
 object BuildingIncomeManager {
-
-    const val INGRESO_POR_ALUMNO = 100L
 
     data class EstadoEdificio(
         val propiedadId: String,
@@ -50,11 +49,14 @@ object BuildingIncomeManager {
     }
 
     /**
-     * Calcula la ganancia que generará un edificio por ciclo según su nivel y alumnos base.
+     * Calcula la ganancia que generará un edificio por ciclo según su nivel y alumnos base,
+     * con el factor de mercado frente al Instituto Rival (1.0 si el rival está apagado).
+     * [poderExtra] sirve para mostrar lo que dará al comprarlo o subirlo de nivel
+     * (ver MercadoAlumnos.ingresoEdificio).
      */
-    fun calcularIngresoPorCiclo(propiedad: Propiedad, nivel: Int = propiedad.nivel): Long {
+    fun calcularIngresoPorCiclo(propiedad: Propiedad, nivel: Int = propiedad.nivel, poderExtra: Long = 0L): Long {
         if (nivel <= 0) return 0L
-        return propiedad.baseAlumnos.toLong() * nivel.toLong() * INGRESO_POR_ALUMNO
+        return MercadoAlumnos.ingresoEdificio(propiedad.baseAlumnos, nivel, poderExtra)
     }
 
     /**

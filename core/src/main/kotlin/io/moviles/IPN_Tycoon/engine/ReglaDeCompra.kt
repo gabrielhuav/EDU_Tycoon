@@ -2,6 +2,7 @@ package io.moviles.IPN_Tycoon.engine
 
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.Propiedad
+import io.moviles.IPN_Tycoon.rival.RivalState
 
 /** Resultado de evaluar si el jugador puede comprar o mejorar una propiedad. */
 sealed class ResultadoCompra {
@@ -14,6 +15,9 @@ sealed class ResultadoCompra {
 
     /** La propiedad ya está en su nivel máximo: no hay nada que comprar. */
     data object NivelMaximo : ResultadoCompra()
+
+    /** El edificio es del Instituto Rival: el jugador no lo puede comprar. */
+    data object PropiedadDelRival : ResultadoCompra()
 }
 
 /**
@@ -47,12 +51,17 @@ object ReglaDeCompra {
      * Si no alcanza, no descuenta dinero ni cambia la propiedad.
      */
     fun comprar(propiedad: Propiedad): ResultadoCompra {
+        if (!propiedad.comprada && RivalState.posee(propiedad.id)) return ResultadoCompra.PropiedadDelRival
+
         val resultado = evaluar(GameState.dinero, costoSiguiente(propiedad))
 
         if (resultado is ResultadoCompra.Permitida && GameState.gastar(resultado.costo)) {
             if (!propiedad.comprada) {
                 propiedad.comprada = true
                 propiedad.nivel = 1
+                // Con el rival apagado se puede comprar un edificio suyo: deja de ser del
+                // rival para que no tenga dos dueños al volver a encenderlo.
+                RivalState.edificios.remove(propiedad.id)
             } else {
                 propiedad.nivel++
             }

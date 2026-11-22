@@ -9,6 +9,7 @@ import ktx.scene2d.Scene2DSkin
 class Main(val saveManager: GameSaveManager) : KtxGame<KtxScreen>() {
     override fun create() {
         KtxAsync.initiate()
+        Configuracion.cargar()
         VisUI.load()
         Scene2DSkin.defaultSkin = VisUI.getSkin()
 

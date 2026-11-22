@@ -1,7 +1,7 @@
 package io.moviles.IPN_Tycoon.engine
 
 import io.moviles.IPN_Tycoon.GameState
-import io.moviles.IPN_Tycoon.PropiedadRepository
+import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 
 /**
  * Registra estadísticas económicas por ciclo global y avance de periodos.
@@ -13,17 +13,15 @@ class EconomyEngine : GameCycleListener {
 
     override val resolutionOrder = ResolutionOrder.ECONOMY
 
-    private val INGRESO_POR_ALUMNO = 100L
-
     data class CycleResult(val ingresos: Long)
 
     var lastResult: CycleResult? = null
         private set
 
     override fun onResolveCycle(cycle: Int) {
-        val ingresosTotales = PropiedadRepository.propiedades.values
-            .filter { it.comprada }
-            .sumOf { it.baseAlumnos * it.nivel * INGRESO_POR_ALUMNO }
+        // Ingreso que darían los edificios este ciclo, con el factor de mercado. Ya no se
+        // acredita aquí: el jugador lo recoge en las burbujas (BuildingIncomeManager).
+        val ingresosTotales = MercadoAlumnos.ingresoJugador()
 
         lastResult = CycleResult(ingresosTotales)
         GameState.ciclosJugados++

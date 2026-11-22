@@ -52,6 +52,14 @@ class PauseMenuWindow(
             }
             row()
 
+            val rivalBtn = textButton(rivalLabel()) { color = rivalColor() }
+            rivalBtn.onChange {
+                Configuracion.rivalActivo = !Configuracion.rivalActivo
+                rivalBtn.setText(rivalLabel())
+                rivalBtn.color = rivalColor()
+            }
+            row()
+
             textButton("Menu principal") {
                 onChange {
                     this@PauseMenuWindow.remove()
@@ -64,6 +72,13 @@ class PauseMenuWindow(
         centerWindow()
     }
 
+    // Mismo estilo que el botón de audio.
+    private fun rivalLabel() =
+        if (Configuracion.rivalActivo) "Instituto Rival: ACTIVADO" else "Instituto Rival: DESACTIVADO"
+
+    private fun rivalColor(): Color =
+        if (Configuracion.rivalActivo) Color.GREEN else Color.CORAL
+
     fun show(stage: Stage) { stage.addActor(this) }
 }
 
@@ -75,10 +90,7 @@ class StatsWindow : VisWindow("Estadísticas") {
         closeOnEscape()
         isModal = false
 
-        val edificios     = PropiedadRepository.propiedades.values.count { it.comprada }
-        val alumnos       = PropiedadRepository.propiedades.values
-            .filter { it.comprada }.sumOf { it.baseAlumnos * it.nivel }
-        val ingresosCiclo = alumnos * 100L
+        val st = StatsEscuela.calcular()
 
         add(scene2d.table {
 
@@ -87,16 +99,26 @@ class StatsWindow : VisWindow("Estadísticas") {
             row()
 
             label("Edificios:") { color = Color.CYAN }.cell(padRight = 10f, padBottom = 8f)
-            label("$edificios comprados").cell(padBottom = 8f)
+            label("${st.edificios} comprados").cell(padBottom = 8f)
             row()
 
             label("Alumnos:") { color = Color.GREEN }.cell(padRight = 10f, padBottom = 8f)
-            label("$alumnos").cell(padBottom = 8f)
+            label("${st.alumnos}").cell(padBottom = 8f)
             row()
 
             label("Ingresos/ciclo:") { color = Color.YELLOW }.cell(padRight = 10f, padBottom = 8f)
-            label("\$${fmt(ingresosCiclo)}").cell(padBottom = 8f)
+            label("\$${fmt(st.ingresosCiclo)}").cell(padBottom = 8f)
             row()
+
+            if (Configuracion.rivalActivo) {
+                label("Mercado:") { color = Color.ORANGE }.cell(padRight = 10f, padBottom = 8f)
+                label("Tú ${st.cuotaJugadorPct}% | Rival ${st.cuotaRivalPct}%").cell(padBottom = 8f)
+                row()
+
+                label("Rival:") { color = Color.SALMON }.cell(padRight = 10f, padBottom = 8f)
+                label("${st.edificiosRival} edif. | \$${fmt(st.dineroRival)}").cell(padBottom = 8f)
+                row()
+            }
 
             label("Ciclos:") { color = Color.LIGHT_GRAY }.cell(padRight = 10f, padBottom = 8f)
             label("${GameState.ciclosJugados}").cell(padBottom = 8f)

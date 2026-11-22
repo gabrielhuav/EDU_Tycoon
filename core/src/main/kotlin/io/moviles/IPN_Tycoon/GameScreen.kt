@@ -44,6 +44,12 @@ import io.moviles.IPN_Tycoon.engine.GameCycleEngine
 import io.moviles.IPN_Tycoon.engine.GameEvent
 import io.moviles.IPN_Tycoon.engine.OpcionDecision
 import io.moviles.IPN_Tycoon.engine.VelocidadCiclo
+import io.moviles.IPN_Tycoon.engine.Resultado
+import io.moviles.IPN_Tycoon.engine.RivalEngine
+import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
+import io.moviles.IPN_Tycoon.rival.RivalAccion
+import io.moviles.IPN_Tycoon.rival.RivalAgent
+import io.moviles.IPN_Tycoon.rival.RivalState
 import ktx.actors.onChange
 import ktx.app.clearScreen
 import ktx.assets.toInternalFile
@@ -58,6 +64,13 @@ class GameScreen(game: Main) : BaseScreen(game) {
     private val eventEngine       = EventEngine { evento -> showEventToast(evento) }
     private val decisionEngine    = DecisionEngine { evento -> mostrarDecision(evento) }
     private var decisionWindow: DecisionEventWindow? = null
+    private val rivalEngine       = RivalEngine(
+        RivalAgent(),
+        onAccion    = { accion -> onRivalAccion(accion) },
+        // El contador del motor no se reinicia entre partidas; ciclosJugados si.
+        cicloActual = { GameState.ciclosJugados },
+        onFinPartida = { resultado -> mostrarFinPartida(resultado) }
+    )
     private var cycleTimer        = 0f
 
     // ── Guardado automático (cada ciclo, al pausar y al salir) ───────
@@ -85,6 +98,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         cycleEngine.addListener(estudiantesEngine)
         cycleEngine.addListener(eventEngine)
         cycleEngine.addListener(decisionEngine)
+        cycleEngine.addListener(rivalEngine)
     }
 
     // ── Mapa ──────────────────────────────────────────────────────────
@@ -226,6 +240,13 @@ class GameScreen(game: Main) : BaseScreen(game) {
     private var eventTituloLabel:   Label? = null
     private var eventEfectoLabel:   Label? = null
     private var eventTable:         Table? = null
+    private var rivalShareLabel:  Label? = null
+    private var lastCuota:        Int = -1
+    private var cachedCuota:      Int = 50
+    private var lastRivalActivo:  Boolean? = null
+    private var rivalToastLabel:  Label? = null
+    private var rivalToastTable:  Table? = null
+    private val rivalTexCache     = HashMap<String, Pair<Int, Texture?>>()
 
     // ── Estado ────────────────────────────────────────────────────────
     var modoCarga: Boolean = false
@@ -274,6 +295,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
         val maxLife: Float = 1.3f
     )
     private val floatingEffects = mutableListOf<FloatingRevenueEffect>()
+    // Un solo GlyphLayout para las burbujas y los efectos: sin asignaciones por frame.
+    private val glyph = GlyphLayout()
 
     // ── OPTIMIZACIÓN: Datos de renderizado pre-calculados ─────────────
     /**
@@ -454,6 +477,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
         lastMoney      = -1
         lastStudents   = -1
         lastReputation = -1
+        lastCuota      = -1
+        lastRivalActivo = null
         cycleTimer     = 0f
         cycleTimeController.reiniciar()
         hudDirty       = true
@@ -644,7 +669,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
     /** Recalcula los totales para el HUD. Se llama solo cuando cambia el estado. */
     private fun recalcularHUDCache() {
         val props = PropiedadRepository.propiedades.values
-        cachedTotalAlumnos  = props.filter { it.comprada }.sumOf { it.baseAlumnos * it.nivel }
+        cachedTotalAlumnos  = MercadoAlumnos.alumnosJugador()
+        cachedCuota         = Math.round(MercadoAlumnos.cuotaJugador() * 100).toInt()
         cachedTotalMaxLevel = props.sumOf { it.mejoraMax }
         cachedCurrentLevel  = props.filter { it.comprada }.sumOf { it.nivel }
         hudDirty = false
@@ -695,6 +721,17 @@ class GameScreen(game: Main) : BaseScreen(game) {
         }
         stage.addActor(eventTable)
 
+        rivalToastLabel = Label("", Label.LabelStyle(font, Color.SALMON))
+        rivalToastTable = Table().apply {
+            background = skin.newDrawable("white", Color(0.25f, 0.05f, 0.05f, 0.85f))
+            pad(8f, 16f, 8f, 16f)
+            add(rivalToastLabel)
+            pack()
+            color.a = 0f
+            setPosition((sw - width) / 2f, sh * 0.30f)
+        }
+        stage.addActor(rivalToastTable)
+
         val hudTable = Table().apply {
             setFillParent(true)
             top()
@@ -708,6 +745,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 add(Label("Reputación: ", goldStyle)).padRight(4f)
                 reputationLabel = Label("0%", goldStyle).apply { setFontScale(1.1f) }
                 add(reputationLabel).padRight(18f)
+                rivalShareLabel = Label("", Label.LabelStyle(font, Color.SALMON)).apply { setFontScale(1.1f) }
+                add(rivalShareLabel).padRight(18f)
 
                 // ── Barra de progreso del ciclo escolar + Control de velocidad ──
                 val cycleInfoTable = Table().apply {
@@ -755,6 +794,8 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         PauseMenuWindow(game) {
+                            // Antes de modoCarga = false: hide() ya no guardaría.
+                            autoGuardado.guardarAhora()
                             modoCarga = false
                             game.setScreen<SeleccionPartida>()
                         }.show(stage)
@@ -802,10 +843,11 @@ class GameScreen(game: Main) : BaseScreen(game) {
 
             // ====================== EDIFICIOS COMPRADOS ======================
             for (entry in renderEntries) {
-                if (!entry.propiedad.comprada) continue
+                val p = entry.propiedad
+                val rivalNivel = if (p.comprada) 0 else RivalState.nivel(p.id)
+                if (!p.comprada && rivalNivel == 0) continue
 
-                val p   = entry.propiedad
-                val tex = entry.cachedTex ?: continue
+                val tex = (if (rivalNivel > 0) rivalTexture(p, rivalNivel) else entry.cachedTex) ?: continue
 
                 // Culling 2D usando coordenadas del EDIFICIO
                 if (!isVisible(entry.bWorldX, entry.bWorldY, p.renderW, p.renderH)) continue
@@ -827,7 +869,9 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 // Centrar horizontalmente al escalar (usando el centro original bWorldX)
                 val drawX = entry.bDrawX + (p.renderW - w) * 0.5f
 
+                if (rivalNivel > 0) r.batch.setColor(1f, 0.55f, 0.55f, 1f)
                 r.batch.draw(tex, drawX, drawY, w, h)
+                if (rivalNivel > 0) r.batch.color = Color.WHITE
             }
 
             // ====================== ETIQUETAS (solo si cerca) ======================
@@ -835,7 +879,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 // PASO B: Fondos de etiquetas (no comprados)
                 r.batch.color = Color.WHITE
                 for (entry in renderEntries) {
-                    if (entry.propiedad.comprada) continue
+                    if (entry.propiedad.comprada || RivalState.posee(entry.propiedad.id)) continue
                     // Culling 2D usando coordenadas de la ETIQUETA
                     if (!isVisible(entry.lWorldX, entry.lWorldY, entry.nameBgW * 0.9f, entry.nameBgH * 0.9f)) continue
                     r.batch.draw(
@@ -850,7 +894,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 // PASO C: Textos (la fuente mantiene el color internamente)
                 worldFont.color = Color.GOLD
                 for (entry in renderEntries) {
-                    if (entry.propiedad.comprada) continue
+                    if (entry.propiedad.comprada || RivalState.posee(entry.propiedad.id)) continue
                     val layout = entry.nameLayout ?: continue
                     // Culling 2D usando coordenadas de la ETIQUETA
                     if (!isVisible(entry.lWorldX, entry.lWorldY, entry.nameBgW, entry.nameBgH)) continue
@@ -888,13 +932,12 @@ class GameScreen(game: Main) : BaseScreen(game) {
 
                 // Etiqueta flotante con el importe listo para recaudar
                 val monto = BuildingIncomeManager.obtenerGananciasListas(entry.propiedad.id)
-                val labelTexto = "+$${formatMoney(monto)}"
-                val layout = GlyphLayout(worldFont, labelTexto)
-
-                val labelX = bubblePos.x - layout.width / 2f
-                val labelY = drawBY - 12f
                 worldFont.color = Color.GREEN
-                worldFont.draw(r.batch, layout, labelX, labelY)
+                glyph.setText(worldFont, "+$${formatMoney(monto)}")
+
+                val labelX = bubblePos.x - glyph.width / 2f
+                val labelY = drawBY - 12f
+                worldFont.draw(r.batch, glyph, labelX, labelY)
             }
 
             // ====================== EFECTOS FLOTANTES DE DINERO (POPUP ANIMADO) ======================
@@ -911,9 +954,9 @@ class GameScreen(game: Main) : BaseScreen(game) {
                 }
 
                 val alpha = (1f - progress).coerceIn(0f, 1f)
-                val layout = GlyphLayout(worldFont, effect.text)
-                worldFont.color = Color(1f, 0.85f, 0.1f, alpha)
-                worldFont.draw(r.batch, layout, effect.worldX - layout.width / 2f, effect.worldY)
+                worldFont.setColor(1f, 0.85f, 0.1f, alpha)
+                glyph.setText(worldFont, effect.text)
+                worldFont.draw(r.batch, glyph, effect.worldX - glyph.width / 2f, effect.worldY)
             }
 
         } catch (e: Exception) {
@@ -923,9 +966,22 @@ class GameScreen(game: Main) : BaseScreen(game) {
         r.batch.end()
     }
 
+    /**
+     * true con una ventana que detiene el juego abierta: una decisión sin responder,
+     * el menú de pausa (y lo que se abre desde él) o el fin de partida.
+     */
+    private fun juegoBloqueado(): Boolean {
+        if (decisionWindow != null) return true
+        for (actor in stage.actors) {
+            if (actor is PauseMenuWindow || actor is FinPartidaWindow) return true
+        }
+        return false
+    }
+
     private fun actualizarCicloDeJuego(delta: Float) {
-        // Juego en pausa mientras haya una decisión sin responder o el reloj esté en PAUSA
-        val ciclosCompletados = cycleTimeController.avanzar(delta, bloqueado = decisionWindow != null)
+        // Juego en pausa con una ventana bloqueante abierta o con el reloj en PAUSA
+        val bloqueado = juegoBloqueado()
+        val ciclosCompletados = cycleTimeController.avanzar(delta, bloqueado = bloqueado)
         cycleTimer = cycleTimeController.tiempoTranscurrido
         repeat(ciclosCompletados) {
             if (decisionWindow != null) return@repeat
@@ -935,7 +991,7 @@ class GameScreen(game: Main) : BaseScreen(game) {
         }
 
         // Actualizar ciclos independientes por edificio respetando la velocidad seleccionada (1x / 2x / PAUSA)
-        if (decisionWindow == null && !cycleTimeController.estaPausado) {
+        if (!bloqueado && !cycleTimeController.estaPausado) {
             val completados = BuildingIncomeManager.actualizar(delta * cycleTimeController.velocidadActual.multiplicador)
             if (completados.isNotEmpty()) {
                 hudDirty = true
@@ -948,6 +1004,15 @@ class GameScreen(game: Main) : BaseScreen(game) {
      * Solo recalcula si hudDirty = true (al comprar/mejorar/fin de ciclo).
      */
     private fun actualizarIndicadoresHUD() {
+        // El rival se puede encender o apagar desde el menú con la partida abierta.
+        val rivalActivo = Configuracion.rivalActivo
+        if (rivalActivo != lastRivalActivo) {
+            lastRivalActivo = rivalActivo
+            lastCuota = -1
+            hudDirty  = true
+            if (!rivalActivo) rivalShareLabel?.setText("")
+        }
+
         if (hudDirty) recalcularHUDCache()
 
         if (GameState.dinero != lastMoney) {
@@ -958,6 +1023,11 @@ class GameScreen(game: Main) : BaseScreen(game) {
         if (cachedTotalAlumnos != lastStudents) {
             lastStudents = cachedTotalAlumnos
             alumnosLabel?.setText(formatAlumnos(lastStudents))
+        }
+
+        if (rivalActivo && cachedCuota != lastCuota) {
+            lastCuota = cachedCuota
+            rivalShareLabel?.setText("Tú $lastCuota% | Rival ${100 - lastCuota}%")
         }
 
         val progresoEdificios = if (cachedTotalMaxLevel > 0) {
@@ -1138,6 +1208,58 @@ class GameScreen(game: Main) : BaseScreen(game) {
         toast.color.a = 0f
         toast.invalidateHierarchy(); toast.pack()
         toast.setPosition((stage.width - toast.width) / 2f, stage.height * 0.22f)
+        toast.addAction(Actions.sequence(
+            Actions.fadeIn(0.25f), Actions.delay(4f), Actions.fadeOut(0.4f)
+        ))
+    }
+
+    /** Textura del edificio segun el nivel del rival (cache por id, sin asignaciones por frame). */
+    private fun rivalTexture(p: Propiedad, nivel: Int): Texture? {
+        val cached = rivalTexCache[p.id]
+        if (cached != null && cached.first == nivel) return cached.second
+        val prefix = p.texturePrefix ?: return null
+        val key = "${prefix}lvl$nivel"
+        val tex = buildingTextureCache[key] ?: run {
+            val file = "Mapa/Edificios/$key.png".toInternalFile()
+            (if (file.exists()) Texture(file) else null).also { buildingTextureCache[key] = it }
+        }
+        rivalTexCache[p.id] = nivel to tex
+        return tex
+    }
+
+    private fun onRivalAccion(accion: RivalAccion) {
+        when (accion) {
+            is RivalAccion.Compra -> {
+                Gdx.app.log("RIVAL", "Compra ${accion.propId} por ${accion.precio} (dinero=${RivalState.dinero})")
+                showRivalToast("Instituto Rival compró: ${accion.nombre}")
+            }
+            is RivalAccion.Mejora -> {
+                Gdx.app.log("RIVAL", "Mejora ${accion.propId} a nivel ${accion.nivel} por ${accion.costo} (dinero=${RivalState.dinero})")
+                showRivalToast("Instituto Rival mejoró: ${accion.nombre} (Nv ${accion.nivel})")
+            }
+            is RivalAccion.CambioEstado ->
+                Gdx.app.log("RIVAL", "Estado ${accion.de} -> ${accion.a}")
+        }
+        hudDirty = true
+    }
+
+    private fun mostrarFinPartida(resultado: Resultado) {
+        val tu = Math.round(MercadoAlumnos.cuotaJugador() * 100).toInt()
+        Gdx.app.log("RIVAL", "Fin de partida: $resultado (Tú $tu% | Rival ${100 - tu}%)")
+        FinPartidaWindow(resultado, tu) {
+            autoGuardado.guardarAhora()
+            modoCarga = false
+            game.setScreen<SeleccionPartida>()
+        }.show(stage)
+    }
+
+    private fun showRivalToast(texto: String) {
+        val toast = rivalToastTable ?: return
+        rivalToastLabel?.setText(texto)
+        toast.clearActions()
+        toast.color.a = 0f
+        toast.invalidateHierarchy(); toast.pack()
+        toast.setPosition((stage.width - toast.width) / 2f, stage.height * 0.30f)
         toast.addAction(Actions.sequence(
             Actions.fadeIn(0.25f), Actions.delay(4f), Actions.fadeOut(0.4f)
         ))

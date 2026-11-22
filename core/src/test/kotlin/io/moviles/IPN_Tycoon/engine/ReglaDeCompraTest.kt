@@ -1,7 +1,9 @@
 package io.moviles.IPN_Tycoon.engine
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.Propiedad
+import io.moviles.IPN_Tycoon.rival.RivalState
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -116,5 +118,34 @@ class ReglaDeCompraTest {
         GameState.dinero = 149L
         ReglaDeCompra.comprar(propiedad())
         assertTrue(GameState.dinero >= 0)
+    }
+
+    @Test
+    fun `no se puede comprar un edificio del rival activo`() {
+        RivalState.reset()
+        Configuracion.rivalActivo = true
+        RivalState.edificios["test"] = 1
+        GameState.dinero = 1_000L
+        val p = propiedad()
+
+        assertEquals(ResultadoCompra.PropiedadDelRival, ReglaDeCompra.comprar(p))
+        assertFalse(p.comprada)
+        assertEquals(1_000L, GameState.dinero)
+        RivalState.reset()
+        Configuracion.rivalActivo = false
+    }
+
+    @Test
+    fun `con el rival apagado su edificio se compra y deja de ser suyo`() {
+        RivalState.reset()
+        Configuracion.rivalActivo = false
+        RivalState.edificios["test"] = 1
+        GameState.dinero = 1_000L
+        val p = propiedad()
+
+        assertTrue(ReglaDeCompra.comprar(p) is ResultadoCompra.Permitida)
+        assertTrue(p.comprada)
+        assertFalse(RivalState.edificios.containsKey("test"))
+        RivalState.reset()
     }
 }

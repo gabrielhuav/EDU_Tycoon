@@ -1,7 +1,9 @@
 package io.moviles.IPN_Tycoon.engine
 
+import io.moviles.IPN_Tycoon.Configuracion
 import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.PropiedadRepository
+import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -15,6 +17,8 @@ class BuildingIncomeManagerTest {
         GameState.reset(500_000L)
         PropiedadRepository.resetProgress()
         BuildingIncomeManager.reiniciar()
+        // Sin rival el ingreso es el base: el factor de mercado vale 1.0.
+        Configuracion.rivalActivo = false
     }
 
     @Test
@@ -63,7 +67,7 @@ class BuildingIncomeManagerTest {
         BuildingIncomeManager.actualizar(escom.tiempoCicloSegundos + 1f)
         assertTrue(BuildingIncomeManager.tieneIngresoListo("escom_hitbox"))
 
-        val gananciasEsperadas = escom.baseAlumnos * escom.nivel * BuildingIncomeManager.INGRESO_POR_ALUMNO
+        val gananciasEsperadas = escom.baseAlumnos * escom.nivel * MercadoAlumnos.INGRESO_POR_ALUMNO
         val recaudado = BuildingIncomeManager.recolectar("escom_hitbox")
 
         assertEquals(gananciasEsperadas, recaudado)

@@ -7,8 +7,9 @@ enum class ResolutionOrder {
     ECONOMY,      // 1. Ingresos y gastos
     CONSTRUCTION, // 2. Finalización de obras
     STUDENTS,     // 3. Generación y asignación
-    REPUTATION,   // 4. Cálculo de prestigio
-    EVENTS        // 5. Eventos y consecuencias
+    RIVAL,        // 4. Ingresos y decisiones del Instituto Rival
+    REPUTATION,   // 5. Cálculo de prestigio
+    EVENTS        // 6. Eventos y consecuencias
 }
 
 /**

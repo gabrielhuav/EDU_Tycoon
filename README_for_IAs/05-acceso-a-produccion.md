@@ -4,10 +4,19 @@
 
 | | |
 |---|---|
-| Enviada | **15 de agosto de 2026, 6:04 p.m.** |
-| Estado | En revisión |
-| Plazo que da Google | 7 días o menos, "ocasionalmente puede llevar más" |
-| Respuesta | Llega por correo **al propietario de la cuenta** de Play Console. Revisar spam. |
+| Enviada | 15 de agosto de 2026, 6:04 p.m. |
+| **Aprobada** | **19 de agosto de 2026, 7:59 p.m.** |
+| Tiempo de respuesta real | 4 días |
+| Estado | ✅ Acceso a producción concedido |
+
+El correo llegó de `no-reply-googleplay-developer@google.com` al propietario de la
+cuenta. Las respuestas se aceptaron **sin observaciones ni solicitud de
+aclaraciones**, así que este expediente sirve como plantilla validada para las
+siguientes apps.
+
+> Congratulations! Your app has been granted Google Play production access.
+> You applied for Google Play production access for your app EDU Tycoon
+> (io.moviles.IPN_Tycoon), and this has now been granted.
 
 Requisitos previos, cumplidos antes de poder abrir el formulario:
 

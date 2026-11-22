@@ -199,6 +199,7 @@ class PartidasGuardadas(game: Main) : BaseScreen(game) {
             }
         } else {
             GameState.reset(GameState.DINERO_INICIAL_REAL); GameState.slotActual = slotNum
+            io.moviles.IPN_Tycoon.rival.RivalState.reset()
             PropiedadRepository.resetProgress()
             gameScreen.modoCarga = false
             game.setScreen<GameScreen>()
