@@ -4,9 +4,10 @@ import io.moviles.IPN_Tycoon.GameState
 import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 
 /**
- * Calcula ingresos pasivos de los edificios comprados cada ciclo.
- * Los efectos de eventos se resuelven en el mismo ciclo mediante EventEngine.
- * Payback objetivo: ~10 ciclos por edificio básico.
+ * Registra estadísticas económicas por ciclo global y avance de periodos.
+ * La recaudación directa de ingresos ha sido transformada en un sistema interactivo
+ * por edificio gestionado por [BuildingIncomeManager], donde el jugador recolecta
+ * activamente las ganancias al completarse la producción en cada plantel.
  */
 class EconomyEngine : GameCycleListener {
 
@@ -18,11 +19,11 @@ class EconomyEngine : GameCycleListener {
         private set
 
     override fun onResolveCycle(cycle: Int) {
-        // Ingreso base x factor de atraccion (cuota de mercado frente al rival).
+        // Ingreso que darían los edificios este ciclo, con el factor de mercado. Ya no se
+        // acredita aquí: el jugador lo recoge en las burbujas (BuildingIncomeManager).
         val ingresosTotales = MercadoAlumnos.ingresoJugador()
 
         lastResult = CycleResult(ingresosTotales)
-        GameState.acreditar(ingresosTotales)
         GameState.ciclosJugados++
     }
 }

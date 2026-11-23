@@ -31,10 +31,13 @@ controlado por IA compite contigo por el mismo mercado.
 |---|---|
 | 🏫 **Campus isométrico** | Recorre un mapa del Politécnico con escuelas como ESCOM, Arquitectura, Biológicas, Bioquímica, el Museo o la Cafetería |
 | 🏗️ **Compra y mejora** | Cada edificio sube de nivel, cambia de aspecto y trae más alumnos |
-| 💰 **Economía por ciclos** | Cada ciclo cobras según tus alumnos y tu cuota de mercado |
-| 🤖 **Instituto Rival** | Una IA que ahorra, compra y compite contigo por los mismos alumnos |
-| 🏆 **Victoria o derrota** | A partir del ciclo 10, domina el mercado para ganar o te quedas fuera |
-| 💾 **Partidas guardadas** | Guarda y retoma tu partida cuando quieras |
+| 💰 **Burbujas de ingresos** | Cada edificio produce a su ritmo; toca la burbuja de monedas para cobrar |
+| ⏩ **Control del tiempo** | Juega a 1x, acelera a 2x o pausa el ciclo escolar desde el HUD |
+| ⚖️ **Decisiones** | Donaciones dudosas, patrocinios o una visita de la SEP: cada elección mueve tu dinero y tu reputación |
+| 🤖 **Instituto Rival (opcional)** | Una IA que ahorra, compra y compite contigo por los mismos alumnos; se activa en el menú de pausa |
+| 🏆 **Victoria o derrota** | Con el rival activo, a partir del ciclo 10 domina el mercado para ganar o te quedas fuera |
+| 💾 **Autoguardado** | La partida se guarda sola cada ciclo, al salir y al cambiar de app |
+| 🎵 **Música y sonido** | Música de fondo y efecto de monedas, con interruptor en el menú |
 | ✈️ **Sin conexión** | Todo corre en el teléfono, sin cuentas ni internet |
 
 ## Tecnología

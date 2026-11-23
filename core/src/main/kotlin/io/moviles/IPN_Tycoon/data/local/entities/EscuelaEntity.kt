@@ -20,5 +20,7 @@ data class EscuelaEntity(
     val alumnosTotales: Int    = 0,
     val fechaGuardado: Long    = System.currentTimeMillis(),
     /** Estado serializado del Instituto Rival (ver RivalState.serializar). Vacio = partida sin rival. */
-    val rivalJson: String      = ""
+    val rivalJson: String      = "",
+    /** Puntos de reputación ganados o perdidos en los eventos de decisión (GameState.reputacionBonus). */
+    val reputacionBonus: Int   = 0
 )

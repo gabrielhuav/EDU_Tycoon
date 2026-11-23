@@ -42,7 +42,8 @@ class PipelineCompletoTest {
             RivalEngine(agent = RivalAgent(), cicloActual = { GameState.ciclosJugados })
         )
         engine.addListener(EstudiantesEngine())
-        engine.addListener(EconomyEngine())
+        val economia = EconomyEngine()
+        engine.addListener(economia)
 
         val dineroAntes = GameState.dinero
         val ingresoEsperado = MercadoAlumnos.ingresoJugador()
@@ -50,7 +51,9 @@ class PipelineCompletoTest {
 
         engine.advanceCycle()
 
-        assertEquals(dineroAntes + ingresoEsperado, GameState.dinero)
+        // El ingreso ya no se acredita en el ciclo: se recoge en las burbujas de cada edificio.
+        assertEquals(dineroAntes, GameState.dinero)
+        assertEquals(ingresoEsperado, economia.lastResult?.ingresos)
         assertEquals(alumnosEsperados, GameState.alumnosTotales)
         assertEquals(1, GameState.ciclosJugados)
     }

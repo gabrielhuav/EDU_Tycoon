@@ -23,6 +23,7 @@ class Main(val saveManager: GameSaveManager) : KtxGame<KtxScreen>() {
 
     override fun dispose() {
         super.dispose()
+        io.moviles.IPN_Tycoon.engine.AudioManager.dispose()
         VisUI.dispose()
     }
 }

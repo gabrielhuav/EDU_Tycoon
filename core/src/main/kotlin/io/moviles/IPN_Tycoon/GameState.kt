@@ -17,6 +17,14 @@ object GameState {
     var dinero: Long = DINERO_INICIAL_REAL
     var alumnosTotales: Int = 0
 
+    // ── Reputación por decisiones ─────────────────────────────────────
+    // Puntos ganados o perdidos en los eventos de decisión. Se suman al
+    // progreso de edificios para obtener la reputación que muestra el HUD.
+    const val REPUTACION_BONUS_MIN = -100
+    const val REPUTACION_BONUS_MAX = 100
+
+    var reputacionBonus: Int = 0
+
     // ── API de dinero ─────────────────────────────────────────────────
     fun puedeComprar(costo: Long) = dinero >= costo
 
@@ -27,6 +35,15 @@ object GameState {
     }
 
     fun acreditar(cantidad: Long) { dinero += cantidad }
+
+    fun ajustarReputacion(puntos: Int) {
+        reputacionBonus = (reputacionBonus + puntos)
+            .coerceIn(REPUTACION_BONUS_MIN, REPUTACION_BONUS_MAX)
+    }
+
+    /** Reputación final (0–100 %): progreso de edificios + puntos de decisiones. */
+    fun reputacionTotal(progresoEdificios: Int): Int =
+        (progresoEdificios + reputacionBonus).coerceIn(0, 100)
 
     fun costoMejora(propiedad: Propiedad): Long =
         propiedad.precio * propiedad.nivel
@@ -40,5 +57,7 @@ object GameState {
         ciclosJugados  = 0
         dinero         = presupuestoInicial
         alumnosTotales = 0
+        reputacionBonus = 0
+        io.moviles.IPN_Tycoon.engine.BuildingIncomeManager.reiniciar()
     }
 }

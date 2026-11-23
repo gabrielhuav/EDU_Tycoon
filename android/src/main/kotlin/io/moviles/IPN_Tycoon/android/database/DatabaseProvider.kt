@@ -12,7 +12,7 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "ipn_tycoon_db"
-            ).addMigrations(MIGRATION_4_5)
+            ).addMigrations(MIGRATION_4_5, MIGRATION_5_6)
                 // Las versiones 1 a 3 del esquema solo existieron en desarrollo (a Play
                 // llegó la 4) y no tienen migración. De la 4 en adelante cada cambio de
                 // esquema necesita su Migration: si falta, la app falla al abrir la base

@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import io.moviles.IPN_Tycoon.data.local.daos.EscuelaDao
 import io.moviles.IPN_Tycoon.data.local.entities.EscuelaEntity
 
-@Database(entities = [EscuelaEntity::class], version = 5, exportSchema = false)
+@Database(entities = [EscuelaEntity::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun escuelaDao(): EscuelaDao
 }
@@ -16,5 +16,12 @@ abstract class AppDatabase : RoomDatabase() {
 val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE escuelas ADD COLUMN rivalJson TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+/** 5 -> 6: agrega la reputación de los eventos de decisión a cada partida guardada. */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE escuelas ADD COLUMN reputacionBonus INTEGER NOT NULL DEFAULT 0")
     }
 }

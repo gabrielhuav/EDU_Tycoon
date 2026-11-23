@@ -1,5 +1,8 @@
 # Matriz de pruebas — Edutycoon-IA (Instituto Rival controlado por IA)
 
+> La matriz de la Entrega 2 (burbujas de ingresos, decisiones, autoguardado,
+> audio y control de ciclos) está en [`pruebas-entrega-2.md`](pruebas-entrega-2.md).
+
 > Plan escrito antes de ejecutar y resultados llenados después de correr los
 > casos en celulares físicos (08/11/2026). Equipo: Jesús Ángel González
 > Arellano (`jesusGoliat`) y Javier Gamez (`Javier-Gamez`).

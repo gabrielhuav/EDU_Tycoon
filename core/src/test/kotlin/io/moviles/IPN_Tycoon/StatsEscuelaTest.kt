@@ -1,6 +1,6 @@
 package io.moviles.IPN_Tycoon
 
-import io.moviles.IPN_Tycoon.engine.EconomyEngine
+import io.moviles.IPN_Tycoon.engine.BuildingIncomeManager
 import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
 import io.moviles.IPN_Tycoon.rival.RivalState
 import org.junit.Assert.assertEquals
@@ -60,13 +60,14 @@ class StatsEscuelaTest {
     }
 
     @Test
-    fun `el ingreso coincide con EconomyEngine en el mismo estado`() {
+    fun `el ingreso coincide con lo que dan las burbujas en el mismo estado`() {
         comprar("escom_hitbox", 2)
         RivalState.edificios["Direccion"] = 2
         val esperado = StatsEscuela.calcular().ingresosCiclo
-        val antes = GameState.dinero
-        EconomyEngine().onResolveCycle(1)
-        assertEquals(esperado, GameState.dinero - antes)
+        val burbujas = PropiedadRepository.propiedades.values
+            .filter { it.comprada }
+            .sumOf { BuildingIncomeManager.calcularIngresoPorCiclo(it) }
+        assertEquals(burbujas, esperado)
         assertEquals(MercadoAlumnos.ingresoJugador(), esperado)
     }
 }

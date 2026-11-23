@@ -2,8 +2,12 @@ package io.moviles.IPN_Tycoon
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.kotcrab.vis.ui.widget.VisWindow
-import io.moviles.IPN_Tycoon.rival.MercadoAlumnos
+import io.moviles.IPN_Tycoon.engine.BuildingIncomeManager
+import io.moviles.IPN_Tycoon.engine.ReglaDeCompra
+import io.moviles.IPN_Tycoon.engine.ResultadoCompra
 import io.moviles.IPN_Tycoon.rival.RivalState
 import ktx.actors.onChange
 import ktx.scene2d.*
@@ -13,38 +17,20 @@ class BuildingInfoWindow(
     private val onBuildingChanged: () -> Unit
 ) : VisWindow("Gestión del Plantel") {
 
+    private lateinit var saldoLabel: Label
+    private lateinit var estadoLabel: Label
+    private lateinit var botonAccion: TextButton
+
+    /** Último saldo mostrado. Si el dinero cambia con la ventana abierta (fin de ciclo o evento), se recalcula. */
+    private var saldoMostrado = Long.MIN_VALUE
+
     init {
         addCloseButton()
         closeOnEscape()
         isModal = false
 
-        val costo: Long
-        val btnTexto: String
-        val puedeMejorar: Boolean
         val nivelRival = if (data.comprada) 0 else RivalState.nivel(data.id)
-
-        when {
-            nivelRival > 0 -> {
-                costo        = 0L
-                btnTexto     = ""
-                puedeMejorar = false
-            }
-            !data.comprada -> {
-                costo        = data.precio
-                btnTexto     = "COMPRAR  \$${fmt(costo)}"
-                puedeMejorar = true
-            }
-            data.nivel < data.mejoraMax -> {
-                costo        = GameState.costoMejora(data)
-                btnTexto     = "MEJORAR LVL ${data.nivel + 1}  \$${fmt(costo)}"
-                puedeMejorar = true
-            }
-            else -> {
-                costo        = 0L
-                btnTexto     = "NIVEL MÁXIMO"
-                puedeMejorar = false
-            }
-        }
+        val segundos = data.tiempoCicloSegundos.toInt()
 
         add(scene2d.table {
 
@@ -63,7 +49,12 @@ class BuildingInfoWindow(
 
             // ── Stats ─────────────────────────────────────────────────
             label("Capacidad: ${data.capacidad} alumnos"); row()
+            label("Ciclo de producción: ${segundos}s") {
+                color = Color.YELLOW
+            }.cell(padBottom = 2f)
+            row()
 
+            // Los ingresos llevan el mismo factor de mercado que se cobra en las burbujas.
             if (nivelRival > 0) {
                 label("Propiedad del Instituto Rival (Nivel $nivelRival)") {
                     color = Color.SALMON
@@ -75,81 +66,141 @@ class BuildingInfoWindow(
                 }.cell(padBottom = 2f)
                 row()
 
-                // Con el mismo factor de mercado que aplica EconomyEngine.
-                val ingresoCiclo = MercadoAlumnos.ingresoEdificio(data.baseAlumnos, data.nivel)
-                label("Ingreso/ciclo: \$${fmt(ingresoCiclo)}") {
+                val ingresoCiclo = BuildingIncomeManager.calcularIngresoPorCiclo(data)
+                label("Ingreso: \$${fmt(ingresoCiclo)} cada ${segundos}s") {
                     color = Color.GREEN
                 }
                 row()
 
-                if (data.nivel < data.mejoraMax) {
-                    val ingresoSiguiente = MercadoAlumnos.ingresoEdificio(
-                        data.baseAlumnos, data.nivel + 1, poderExtra = data.baseAlumnos.toLong()
-                    )
-                    label("Nivel ${data.nivel + 1}: \$${fmt(ingresoSiguiente)}/ciclo") {
+                if (BuildingIncomeManager.tieneIngresoListo(data.id)) {
+                    val listas = BuildingIncomeManager.obtenerGananciasListas(data.id)
+                    label("★ ¡\$${fmt(listas)} listos! Toca la burbuja en el mapa") {
+                        color = Color.GOLD
+                    }.cell(padTop = 2f, padBottom = 2f)
+                    row()
+                } else {
+                    val restante = BuildingIncomeManager.obtenerTiempoRestante(data).toInt()
+                    label("Próximo cobro en: ${restante}s") {
                         color = Color.LIGHT_GRAY
+                    }.cell(padBottom = 2f)
+                    row()
+                }
+
+                if (data.nivel < data.mejoraMax) {
+                    val ingresoSiguiente = BuildingIncomeManager.calcularIngresoPorCiclo(
+                        data, data.nivel + 1, poderExtra = data.baseAlumnos.toLong()
+                    )
+                    label("Nivel ${data.nivel + 1}: \$${fmt(ingresoSiguiente)} cada ${segundos}s") {
+                        color = Color.GRAY
                     }
                     row()
                 }
             } else {
-                val ingresoNivel1 = MercadoAlumnos.ingresoEdificio(
-                    data.baseAlumnos, 1, poderExtra = data.baseAlumnos.toLong()
+                val ingresoNivel1 = BuildingIncomeManager.calcularIngresoPorCiclo(
+                    data, 1, poderExtra = data.baseAlumnos.toLong()
                 )
-                label("Ingreso al comprar: \$${fmt(ingresoNivel1)}/ciclo") {
+                label("Ingreso al comprar: \$${fmt(ingresoNivel1)} cada ${segundos}s") {
                     color = Color.GREEN
                 }
                 row()
             }
 
-            // ── Saldo ─────────────────────────────────────────────────
-            label("Tu saldo: \$${fmt(GameState.dinero)}") {
-                color = Color.LIGHT_GRAY
-            }.cell(padTop = 6f, padBottom = 4f)
-            row()
-
-            // ── Botón acción ──────────────────────────────────────────
-            if (nivelRival == 0) textButton(btnTexto) {
-                isDisabled = !puedeMejorar
-
-                onChange {
-                    if (!puedeMejorar) return@onChange
-                    // El rival pudo comprarlo mientras esta ventana estaba abierta.
-                    if (!data.comprada && RivalState.posee(data.id)) {
-                        setText("Propiedad del rival")
-                        isDisabled = true
-                        return@onChange
-                    }
-
-                    if (!GameState.puedeComprar(costo)) {
-                        setText("¡Saldo insuficiente!")
-                        color = Color.RED
-                        isDisabled = true
-                        return@onChange
-                    }
-
-                    GameState.gastar(costo)
-
-                    if (!data.comprada) {
-                        data.comprada = true
-                        data.nivel    = 1
-                        // Con el rival apagado se puede comprar un edificio suyo: deja de
-                        // ser del rival para que no tenga dos dueños al volver a encenderlo.
-                        RivalState.edificios.remove(data.id)
-                    } else {
-                        data.nivel++
-                    }
-
-                    onBuildingChanged()
-                    this@BuildingInfoWindow.remove()
+            // El edificio del rival no se puede comprar: sin costo, saldo ni botón.
+            if (nivelRival == 0) {
+                // ── Costo ─────────────────────────────────────────────
+                ReglaDeCompra.costoSiguiente(data)?.let { costo ->
+                    label("Costo: \$${fmt(costo)}") {
+                        color = Color.LIGHT_GRAY
+                    }.cell(padTop = 6f)
+                    row()
                 }
-            }.cell(padTop = 14f, expandX = true, fillX = true)
+
+                // ── Saldo actual ──────────────────────────────────────
+                label("") {
+                    color = Color.LIGHT_GRAY
+                    saldoLabel = this
+                }.cell(padTop = 2f, padBottom = 2f)
+                row()
+
+                // ── Saldo después o cuánto falta ──────────────────────
+                label("") {
+                    estadoLabel = this
+                }.cell(padBottom = 4f)
+                row()
+
+                // ── Botón acción ──────────────────────────────────────
+                textButton("") {
+                    botonAccion = this
+                    onChange { intentarCompra() }
+                }.cell(padTop = 14f, expandX = true, fillX = true)
+            }
         }).pad(16f)
 
+        if (nivelRival == 0) actualizarEstado()
         pack()
         centerWindow()
     }
 
+    override fun act(delta: Float) {
+        super.act(delta)
+        if (::botonAccion.isInitialized && GameState.dinero != saldoMostrado) actualizarEstado()
+    }
+
     fun show(stage: Stage) { stage.addActor(this) }
+
+    /** Aplica la regla de compra a la ventana: textos, colores y si el botón está habilitado. */
+    private fun actualizarEstado() {
+        saldoMostrado = GameState.dinero
+        saldoLabel.setText("Tu saldo: \$${fmt(saldoMostrado)}")
+
+        when (val resultado = ReglaDeCompra.evaluar(saldoMostrado, ReglaDeCompra.costoSiguiente(data))) {
+            is ResultadoCompra.Permitida -> {
+                estadoLabel.setText("Saldo después: \$${fmt(resultado.saldoDespues)}")
+                estadoLabel.color = Color.LIGHT_GRAY
+                botonAccion.setText(textoAccion(resultado.costo))
+                botonAccion.isDisabled = false
+                botonAccion.color = Color.WHITE
+            }
+            is ResultadoCompra.SaldoInsuficiente -> {
+                estadoLabel.setText("Te faltan \$${fmt(resultado.faltante)}")
+                estadoLabel.color = Color.SALMON
+                botonAccion.setText("SALDO INSUFICIENTE")
+                botonAccion.isDisabled = true
+                botonAccion.color = Color.GRAY
+            }
+            ResultadoCompra.NivelMaximo -> {
+                estadoLabel.setText("")
+                botonAccion.setText("NIVEL MÁXIMO")
+                botonAccion.isDisabled = true
+                botonAccion.color = Color.WHITE
+            }
+            ResultadoCompra.PropiedadDelRival -> mostrarPropiedadDelRival()
+        }
+    }
+
+    private fun intentarCompra() {
+        when (ReglaDeCompra.comprar(data)) {
+            is ResultadoCompra.Permitida -> {
+                onBuildingChanged()
+                remove()
+            }
+            // El rival pudo comprarlo mientras esta ventana estaba abierta.
+            ResultadoCompra.PropiedadDelRival -> mostrarPropiedadDelRival()
+            // Si el saldo cambió justo antes del clic, la compra no se hace y la ventana muestra el estado real.
+            else -> actualizarEstado()
+        }
+    }
+
+    private fun mostrarPropiedadDelRival() {
+        estadoLabel.setText("")
+        botonAccion.setText("PROPIEDAD DEL RIVAL")
+        botonAccion.isDisabled = true
+        botonAccion.color = Color.SALMON
+    }
+
+    private fun textoAccion(costo: Long) =
+        if (!data.comprada) "COMPRAR  \$${fmt(costo)}"
+        else "MEJORAR LVL ${data.nivel + 1}  \$${fmt(costo)}"
 
     private fun fmt(v: Long) = when {
         v >= 1_000_000L -> "${"%.2f".format(v / 1_000_000.0)}M"

@@ -48,12 +48,10 @@ class RivalEngineTest {
     }
 
     @Test
-    fun `economy applies attraction factor to player income`() {
-        PropiedadRepository.getPropiedad("escom_hitbox")!!.apply { comprada = true; nivel = 1 }
-        val antes = GameState.dinero
-        EconomyEngine().onResolveCycle(1)
+    fun `building income applies attraction factor to player income`() {
+        val escom = PropiedadRepository.getPropiedad("escom_hitbox")!!.apply { comprada = true; nivel = 1 }
         // rival vacio -> cuota 1.0 -> factor 1.25 : 600*100*1.25
-        assertEquals(antes + 75_000L, GameState.dinero)
+        assertEquals(75_000L, BuildingIncomeManager.calcularIngresoPorCiclo(escom))
         EstudiantesEngine().onResolveCycle(1)
         assertEquals(750, GameState.alumnosTotales)
     }

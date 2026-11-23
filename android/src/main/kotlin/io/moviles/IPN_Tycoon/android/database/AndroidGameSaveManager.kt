@@ -98,7 +98,8 @@ class AndroidGameSaveManager(
         ciclosJugados  = GameState.ciclosJugados,
         alumnosTotales = MercadoAlumnos.alumnosJugador(),
         fechaGuardado  = System.currentTimeMillis(),
-        rivalJson      = RivalState.serializar()
+        rivalJson      = RivalState.serializar(),
+        reputacionBonus = GameState.reputacionBonus
     )
 
     private fun aplicarPartida(entity: EscuelaEntity) {
@@ -109,6 +110,8 @@ class AndroidGameSaveManager(
         GameState.nombreJugador  = entity.nombreJugador
         GameState.nombreEscuela  = entity.nombreEscuela
         GameState.alumnosTotales = entity.alumnosTotales
+        GameState.reputacionBonus = entity.reputacionBonus
+            .coerceIn(GameState.REPUTACION_BONUS_MIN, GameState.REPUTACION_BONUS_MAX)
         deserializarEdificios(entity.edificiosJson)
         RivalState.deserializar(entity.rivalJson)
     }

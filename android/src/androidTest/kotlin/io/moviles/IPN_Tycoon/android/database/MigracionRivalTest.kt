@@ -12,7 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Verifica MIGRATION_4_5 sin fallbackToDestructiveMigration ni DatabaseProvider. */
+/** Verifica MIGRATION_4_5 y MIGRATION_5_6 sin fallbackToDestructiveMigration ni DatabaseProvider. */
 @RunWith(AndroidJUnit4::class)
 class MigracionRivalTest {
 
@@ -50,14 +50,41 @@ class MigracionRivalTest {
         raw.close()
     }
 
-    @Test
-    fun migracion4a5ConservaFilaYAgregaRivalJsonVacio() = runBlocking {
+    private fun crearBaseVersion5() {
         crearBaseVersion4()
+        val raw = context.openOrCreateDatabase(nombreDb, Context.MODE_PRIVATE, null)
+        raw.execSQL("ALTER TABLE escuelas ADD COLUMN rivalJson TEXT NOT NULL DEFAULT ''")
+        raw.execSQL("UPDATE escuelas SET rivalJson = '400000|EXPANDIR|0|0|0|cafeteria:1' WHERE slot = 1")
+        raw.version = 5
+        raw.close()
+    }
 
-        val db = Room.databaseBuilder(context, AppDatabase::class.java, nombreDb)
-            .addMigrations(MIGRATION_4_5)
+    private fun abrirConMigraciones() =
+        Room.databaseBuilder(context, AppDatabase::class.java, nombreDb)
+            .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
             .allowMainThreadQueries()
             .build()
+
+    @Test
+    fun migracion5a6ConservaRivalYAgregaReputacionEnCero() = runBlocking {
+        crearBaseVersion5()
+
+        val db = abrirConMigraciones()
+        try {
+            val fila = db.escuelaDao().getBySlot(1)
+            assertNotNull("La fila debe sobrevivir a la migracion", fila)
+            assertEquals("400000|EXPANDIR|0|0|0|cafeteria:1", fila!!.rivalJson)
+            assertEquals(0, fila.reputacionBonus)
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun migracion4a6ConservaFilaYAgregaRivalJsonVacio() = runBlocking {
+        crearBaseVersion4()
+
+        val db = abrirConMigraciones()
         try {
             val fila = db.escuelaDao().getBySlot(1)
             assertNotNull("La fila debe sobrevivir a la migracion", fila)
@@ -68,6 +95,7 @@ class MigracionRivalTest {
             assertEquals(7, fila.ciclosJugados)
             assertEquals(600, fila.alumnosTotales)
             assertEquals("", fila.rivalJson)
+            assertEquals(0, fila.reputacionBonus)
         } finally {
             db.close()
         }

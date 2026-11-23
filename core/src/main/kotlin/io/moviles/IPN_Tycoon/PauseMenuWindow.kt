@@ -42,17 +42,21 @@ class PauseMenuWindow(
             }
             row()
 
-            val audioBtn = textButton(audioLabel()) {}
+            val audioBtn = textButton(io.moviles.IPN_Tycoon.engine.AudioManager.obtenerTextoBoton()) {
+                color = io.moviles.IPN_Tycoon.engine.AudioManager.obtenerColorBoton()
+            }
             audioBtn.onChange {
-                GameState.musicaActiva = !GameState.musicaActiva
-                audioBtn.setText(audioLabel())
+                io.moviles.IPN_Tycoon.engine.AudioManager.alternarAudio()
+                audioBtn.setText(io.moviles.IPN_Tycoon.engine.AudioManager.obtenerTextoBoton())
+                audioBtn.color = io.moviles.IPN_Tycoon.engine.AudioManager.obtenerColorBoton()
             }
             row()
 
-            val rivalBtn = textButton(rivalLabel()) {}
+            val rivalBtn = textButton(rivalLabel()) { color = rivalColor() }
             rivalBtn.onChange {
                 Configuracion.rivalActivo = !Configuracion.rivalActivo
                 rivalBtn.setText(rivalLabel())
+                rivalBtn.color = rivalColor()
             }
             row()
 
@@ -68,11 +72,12 @@ class PauseMenuWindow(
         centerWindow()
     }
 
-    private fun audioLabel() =
-        if (GameState.musicaActiva) "Audio: ON" else "Audio: OFF"
-
+    // Mismo estilo que el botón de audio.
     private fun rivalLabel() =
-        if (Configuracion.rivalActivo) "Instituto Rival (IA): ON" else "Instituto Rival (IA): OFF"
+        if (Configuracion.rivalActivo) "Instituto Rival: ACTIVADO" else "Instituto Rival: DESACTIVADO"
+
+    private fun rivalColor(): Color =
+        if (Configuracion.rivalActivo) Color.GREEN else Color.CORAL
 
     fun show(stage: Stage) { stage.addActor(this) }
 }
